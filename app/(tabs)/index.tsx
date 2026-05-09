@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { Picker } from '@react-native-picker/picker';
+import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -13,14 +14,41 @@ import { styles } from './index.styles';
 
 const API_IP = '192.168.1.100'; // Replace with your computer's local IP address
 
+const MAJORS: string[] = [
+  "physical_education",
+  "education",
+  "tourism",
+  "veterinary",
+  "nursing",
+  "pharmacy",
+  "science",
+  "fine_arts",
+  "agriculture",
+  "law",
+  "dentistry",
+  "medicine",
+  "business",
+  "textiles",
+  "architectural",
+  "nuclear_and_radiation",
+  "naval_architecture",
+  "production",
+  "chemical",
+  "mechanical",
+  "civil",
+  "electrical_power_and_machines",
+  "electronics_and_communications"
+];
+
 export default function HomeScreen() {
   // State variables for form inputs
-  const [major, setMajor] = useState('');
+  const [major, setMajor] = useState(MAJORS[0]);
   const [likedCourses, setLikedCourses] = useState('');
   const [completedCourses, setCompletedCourses] = useState('');
   const [preferredDifficulty, setPreferredDifficulty] = useState('medium');
   
   // State variables for fetching status, results, and errors
+  const [dbCourses, setDbCourses] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [recommendations, setRecommendations] = useState<string[] | string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -36,17 +64,53 @@ export default function HomeScreen() {
     return input.split(',').map((item: string) => formatString(item)).filter(Boolean);
   };
 
+  // Fetch available courses from DB on component mount
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const response = await fetch(`http://${API_IP}:8000/api/courses/`);
+        if (response.ok) {
+          const data = await response.json();
+          // Assuming data is an array of strings
+          if (Array.isArray(data)) {
+            const parsedCourses = data.map((c: string) => formatString(c));
+            setDbCourses(parsedCourses.filter(Boolean));
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch available courses:', err);
+      }
+    };
+    fetchCourses();
+  }, []);
+
   // Handles the API request based on the selected recommendation type (Prolog/AI)
   const handleFetchRecommendations = async (type: 'prolog' | 'ai') => {
     setLoading(true);
     setRecommendations(null);
     setError(null);
 
+    const parsedLikedCourses = parseInput(likedCourses);
+    const parsedCompletedCourses = parseInput(completedCourses);
+
+    // Give feedback if DB courses are loaded and user entered invalid courses (only for Prolog)
+    if (type === 'prolog' && dbCourses.length > 0) {
+      const invalidCourses = [...parsedLikedCourses, ...parsedCompletedCourses].filter(
+        c => !dbCourses.includes(c)
+      );
+
+      if (invalidCourses.length > 0) {
+        setError(`The following courses are missing from the database: ${invalidCourses.join(', ')}`);
+        setLoading(false);
+        return;
+      }
+    }
+
     // Request body
     const payload = {
-      major: formatString(major),
-      liked_courses: parseInput(likedCourses),
-      completed_courses: parseInput(completedCourses),
+      major: major, // Major is already from the predefined list
+      liked_courses: parsedLikedCourses,
+      completed_courses: parsedCompletedCourses,
       preferred_difficulty: preferredDifficulty.trim().toLowerCase(),
     };
 
@@ -55,23 +119,6 @@ export default function HomeScreen() {
         ? `http://${API_IP}:8000/api/recommend/prolog/`
         : `http://${API_IP}:8000/api/recommend/ai/`;
 
-    // // Simulated hardcoded response (COMMENT THIS OUT LATER)
-    // setTimeout(() => {
-    //   if (type === 'prolog') {
-    //     // Hardcoded example for Prolog (Array of strings)
-    //     setRecommendations([
-    //       'CS301: Introduction to Artificial Intelligence',
-    //       'CS302: Software Engineering Basics',
-    //       'CS405: Advanced Algorithms'
-    //     ]);
-    //   } else {
-    //     // Hardcoded example for AI (String of text)
-    //     setRecommendations(
-    //       'Based on your liked courses and preferred "medium" difficulty, I highly recommend looking into the Software Engineering or Intro to AI tracks. They perfectly align with your background!'
-    //     );
-    //   }
-    //   setLoading(false);
-    // }, 1500);
 
     // send POST request to the appropriate endpoint and handle the response
     try {
@@ -149,13 +196,23 @@ export default function HomeScreen() {
         {/* Form inputs for user data */}
         <View style={styles.formGroup}>
           <Text style={styles.label}>Major</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="e.g. computer_science"
-            placeholderTextColor="#888"
-            value={major}
-            onChangeText={setMajor}
-          />
+          <View style={[styles.input, styles.pickerContainer]}>
+            <Picker
+              selectedValue={major}
+              onValueChange={(itemValue) => setMajor(itemValue)}
+              style={styles.picker}
+              dropdownIconColor="#FFFFFF"
+            >
+              {MAJORS.map((m) => (
+                <Picker.Item 
+                  key={m} 
+                  label={m.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())} 
+                  value={m} 
+                  style={styles.pickerItem} 
+                />
+              ))}
+            </Picker>
+          </View>
         </View>
         <View style={styles.formGroup}>
           <Text style={styles.label}>Liked Courses (comma-separated)</Text>
