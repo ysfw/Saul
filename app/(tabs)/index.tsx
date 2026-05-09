@@ -151,7 +151,7 @@ export default function HomeScreen() {
           <Text style={styles.label}>Major</Text>
           <TextInput
             style={styles.input}
-            placeholder="e.g. Computer Science"
+            placeholder="e.g. computer_science"
             placeholderTextColor="#888"
             value={major}
             onChangeText={setMajor}
@@ -161,7 +161,7 @@ export default function HomeScreen() {
           <Text style={styles.label}>Liked Courses (comma-separated)</Text>
           <TextInput
             style={styles.input}
-            placeholder="e.g. CS101, Math202"
+            placeholder="e.g. math_1, intro_to_programming"
             placeholderTextColor="#888"
             value={likedCourses}
             onChangeText={setLikedCourses}
@@ -171,7 +171,7 @@ export default function HomeScreen() {
           <Text style={styles.label}>Completed Courses (comma-separated)</Text>
           <TextInput
             style={styles.input}
-            placeholder="e.g. Intro to CS, Physics 1"
+            placeholder="e.g. intro_to_cs, physics_1"
             placeholderTextColor="#888"
             value={completedCourses}
             onChangeText={setCompletedCourses}
