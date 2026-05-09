@@ -1,98 +1,221 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import {
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { styles } from './index.styles';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+const API_IP = '192.168.1.100'; // Replace with your computer's local IP address
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  // State variables for form inputs
+  const [major, setMajor] = useState('');
+  const [likedCourses, setLikedCourses] = useState('');
+  const [completedCourses, setCompletedCourses] = useState('');
+  const [preferredDifficulty, setPreferredDifficulty] = useState('medium');
+  
+  // State variables for fetching status, results, and errors
+  const [loading, setLoading] = useState(false);
+  const [recommendations, setRecommendations] = useState<string[] | string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  // Helper to convert comma-separated strings into an array of trimmed items
+  const parseInput = (input: string) => {
+    if (!input.trim()) return [];
+    return input.split(',').map((item: string) => item.trim());
+  };
+
+  // Handles the API request based on the selected recommendation type (Prolog/AI)
+  const handleFetchRecommendations = async (type: 'prolog' | 'ai') => {
+    setLoading(true);
+    setRecommendations(null);
+    setError(null);
+
+    // Request body
+    const payload = {
+      major: major.trim(),
+      liked_courses: parseInput(likedCourses),
+      completed_courses: parseInput(completedCourses),
+      preferred_difficulty: preferredDifficulty.trim().toLowerCase(),
+    };
+
+    const endpoint =
+      type === 'prolog'
+        ? `http://${API_IP}:8000/api/recommend/prolog/`
+        : `http://${API_IP}:8000/api/recommend/ai/`;
+
+    // // Simulated hardcoded response (COMMENT THIS OUT LATER)
+    // setTimeout(() => {
+    //   if (type === 'prolog') {
+    //     // Hardcoded example for Prolog (Array of strings)
+    //     setRecommendations([
+    //       'CS301: Introduction to Artificial Intelligence',
+    //       'CS302: Software Engineering Basics',
+    //       'CS405: Advanced Algorithms'
+    //     ]);
+    //   } else {
+    //     // Hardcoded example for AI (String of text)
+    //     setRecommendations(
+    //       'Based on your liked courses and preferred "medium" difficulty, I highly recommend looking into the Software Engineering or Intro to AI tracks. They perfectly align with your background!'
+    //     );
+    //   }
+    //   setLoading(false);
+    // }, 1500);
+
+    // send POST request to the appropriate endpoint and handle the response
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setRecommendations(data.recommendations);
+    } catch (err: any) {
+      setError(err.message || 'Something went wrong while fetching.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Dynamically renders the list of strings (Prolog) or single text block (AI) based on the response type
+  const renderRecommendations = () => {
+    if (!recommendations) return null;
+
+    // If the response is an array of strings (Prolog), render each recommendation as a bullet point
+    if (Array.isArray(recommendations)) {
+      return (
+        <View style={styles.resultsContainer}>
+          <Text style={styles.resultsTitle}>Recommendations:</Text>
+          {recommendations.length > 0 ? (
+            recommendations.map((rec: string, index: number) => (
+              <View key={index} style={styles.recommendationCard}>
+                <Text style={styles.recommendationText}>• {rec}</Text>
+              </View>
+            ))
+          ) : (
+            <Text style={styles.resultText}>No recommendations found.</Text>
+          )}
+        </View>
+      );
+    } // If the response is a single string (AI), render it as a block of text
+    else if (typeof recommendations === 'string') {
+      return (
+        <View style={styles.resultsContainer}>
+          <Text style={styles.resultsTitle}>Expected Advice:</Text>
+          <View style={styles.recommendationCard}>
+            <Text style={styles.recommendationText}>{recommendations}</Text>
+          </View>
+        </View>
+      );
+    }
+
+    return null;
+  };
+
+  // Main UI render code (Form inputs, Action Buttons, States, and Results container) 
+  return (
+    // KeyboardAvoidingView ensures that the form is not hidden by the keyboard on mobile devices
+    <KeyboardAvoidingView 
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      {/* ScrollView allows the content to be scrollable, especially when the keyboard is open or on smaller screens */}
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        {/* Header and Subheader for the app */}
+        <Text style={styles.header}>Smart Study Advisor</Text>
+        <Text style={styles.subHeader}>Find your next path</Text>
+
+        {/* Form inputs for user data */}
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>Major</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="e.g. Computer Science"
+            placeholderTextColor="#888"
+            value={major}
+            onChangeText={setMajor}
+          />
+        </View>
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>Liked Courses (comma-separated)</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="e.g. CS101, Math202"
+            placeholderTextColor="#888"
+            value={likedCourses}
+            onChangeText={setLikedCourses}
+          />
+        </View>
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>Completed Courses (comma-separated)</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="e.g. Intro to CS, Physics 1"
+            placeholderTextColor="#888"
+            value={completedCourses}
+            onChangeText={setCompletedCourses}
+          />
+        </View>
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>Preferred Difficulty</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="easy, medium, hard"
+            placeholderTextColor="#888"
+            value={preferredDifficulty}
+            onChangeText={setPreferredDifficulty}
+          />
+        </View>
+
+        {/* Action Buttons for fetching recommendations */}
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={[styles.button, styles.primaryButton]}
+            onPress={() => handleFetchRecommendations('prolog')}
+            disabled={loading}
+          >
+            <Text style={styles.buttonText}>Get Prolog Recommendations</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.button, styles.secondaryButton]}
+            onPress={() => handleFetchRecommendations('ai')}
+            disabled={loading}
+          >
+            <Text style={styles.buttonText}>Get AI Recommendations</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Conditional rendering for loading state, error messages, and recommendations results */}
+        {loading && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#4DA8DA" />
+            <Text style={styles.loadingText}>Fetching recommendations...</Text>
+          </View>
+        )}
+
+        {error && (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>Error: {error}</Text>
+          </View>
+        )}
+
+        {renderRecommendations()}
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
