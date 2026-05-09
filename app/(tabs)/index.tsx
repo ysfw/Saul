@@ -25,10 +25,15 @@ export default function HomeScreen() {
   const [recommendations, setRecommendations] = useState<string[] | string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Helper to convert comma-separated strings into an array of trimmed items
+  // Format individual string: lowercase, replace spaces with underscores, trim whitespace
+  const formatString = (str: string) => {
+    return str.trim().toLowerCase().replace(/\s+/g, '_');
+  };
+
+  // Helper to convert comma-separated strings into an array of formatted items
   const parseInput = (input: string) => {
     if (!input.trim()) return [];
-    return input.split(',').map((item: string) => item.trim());
+    return input.split(',').map((item: string) => formatString(item)).filter(Boolean);
   };
 
   // Handles the API request based on the selected recommendation type (Prolog/AI)
@@ -39,7 +44,7 @@ export default function HomeScreen() {
 
     // Request body
     const payload = {
-      major: major.trim(),
+      major: formatString(major),
       liked_courses: parseInput(likedCourses),
       completed_courses: parseInput(completedCourses),
       preferred_difficulty: preferredDifficulty.trim().toLowerCase(),
@@ -83,8 +88,10 @@ export default function HomeScreen() {
       }
 
       const data = await response.json();
+      console.log('Received response:', data);
       setRecommendations(data.recommendations);
     } catch (err: any) {
+      console.error('Fetch Error:', err);
       setError(err.message || 'Something went wrong while fetching.');
     } finally {
       setLoading(false);
