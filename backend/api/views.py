@@ -1,5 +1,3 @@
-import json
-
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -18,8 +16,9 @@ from django.conf import settings
 
 @api_view(['GET'])
 def get_majors(request):
-    majors = Major.objects.values_list('name', flat=True)
-    return Response(list(majors))
+    majors = Major.objects.all()
+    serializer = MajorSerializer(majors, many=True)
+    return Response(serializer.data)
 
 
 @api_view(['GET'])
@@ -71,47 +70,22 @@ def recommend_ai(request):
         client= genai.Client(api_key=settings.GEMINI_API_KEY)
 
         #Building the prompt and note this func doesnt save context
-        prompt = f"""
-            You are a university course recommendation system.
-            Based on the student's information, recommend suitable new courses.
-            Student major: {major}
-            Liked courses:
-            {', '.join(liked_courses)}
-            Completed courses:
-            {', '.join(completed_courses)}
-            Preferred difficulty: {preferred_difficulty}
-            University prerequisite rules: {prerequisites}
-
-            Requirements:
-            - Only recommend courses the student is eligible to take based on prerequisites.
-            - Do not recommend courses already completed.
-            - Align with student interests and preferred difficulty.
-            - Return ONLY a raw JSON object, no markdown, no code blocks, no extra text.
-            
-            Return in this exact format:
-                {{
-                    "recommendations": [
-                        {{"course_name": "Course 1", "difficulty": "easy|medium|hard"}},
-                        {{"course_name": "Course 2", "difficulty": "easy|medium|hard"}}
-                    ]
-                }}
-            
+        prompt = f""""
+            I am a {major} student.
+                I liked these courses: {', '.join(liked_courses)}.
+                I have completed: {', '.join(completed_courses)}.
+                I prefer {preferred_difficulty} difficulty.
+                Note the my university prerequisites in this major are: {prerequisites}
+                Recommend me new courses to take.
                 """
 
-        response=client.models.generate_content(model="gemini-2.5-flash",
+        response=client.models.generate_content(model="gemini-2.0-flash",
             contents=prompt)
-        raw = response.text
         if not response or not response.text:
             return Response({"error": "didnt get response from gemini"},status=status.HTTP_502_BAD_GATEWAY)
 
-        clean = raw.strip()
-        if clean.startswith("```"):
-            clean = clean.split("```")[1]  # get content between backticks
-            if clean.startswith("json"):
-                clean = clean[4:]  # remove the word "json"
-            clean = clean.strip()
-        data = json.loads(clean)
-        return Response(data, status=status.HTTP_200_OK)
+        return Response({'recommendations': response.text}
+                        , status=status.HTTP_200_OK)
 
     except Exception as e:
         return Response(
@@ -120,20 +94,6 @@ def recommend_ai(request):
 
 
 
-@api_view(['GET'])
-def test_gemini(request):
-    try:
-        client = genai.Client(api_key=settings.GEMINI_API_KEY)
-
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents="say hi"  # absolute minimum prompt
-        )
-
-        return Response({"reply": response.text})
-
-    except Exception as e:
-        return Response({"error": str(e)}, status=500)
     response=model.generate_content(prompt)
     return Response({'recommendations': response.text}, status=status.HTTP_200_OK)
 
