@@ -33,6 +33,7 @@ def extract_liked_courses(topics):
     if not topics:
         return []
     #this shit topic__in==where topic in topics [in SQL]
+    topics=list(map(lambda t:t.lower(), topics))    #map here takes(function,collection) so i apply fun to each elemnt in collection
     liked_courses=Course.objects.filter(topic__in=topics).values_list('name', flat=True)
     return list(liked_courses)
 
