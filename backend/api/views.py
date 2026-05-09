@@ -79,7 +79,7 @@ def recommend_ai(request):
                 Recommend me new courses to take.
                 """
 
-        response=client.models.generate_content(model="gemini-2.0-flash",
+        response=client.models.generate_content(model="gemini-2.5-flash",
             contents=prompt)
         if not response or not response.text:
             return Response({"error": "didnt get response from gemini"},status=status.HTTP_502_BAD_GATEWAY)
@@ -92,8 +92,20 @@ def recommend_ai(request):
             {"error":f"Gemini key error pay u poor: {str(e)}"},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+@api_view(['GET'])
+def test_gemini(request):
+    try:
+        client = genai.Client(api_key=settings.GEMINI_API_KEY)
 
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents="say hi"  # absolute minimum prompt
+        )
 
+        return Response({"reply": response.text})
+
+    except Exception as e:
+        return Response({"error": str(e)}, status=500)
     response=model.generate_content(prompt)
     return Response({'recommendations': response.text}, status=status.HTTP_200_OK)
 
