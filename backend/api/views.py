@@ -1,3 +1,5 @@
+import json
+
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -69,7 +71,7 @@ def recommend_ai(request):
         client= genai.Client(api_key=settings.GEMINI_API_KEY)
 
         #Building the prompt and note this func doesnt save context
-        prompt = f""""
+        prompt = f"""
             You are a university course recommendation system.
             Based on the student's information, recommend suitable new courses.
             Student major: {major}
@@ -83,31 +85,40 @@ def recommend_ai(request):
             Requirements:
             - Only recommend courses the student is eligible to take based on prerequisites.
             - Do not recommend courses already completed.
-            - Recommendations should align with the student's interests and preferred difficulty.
-            - Return ONLY valid JSON.
-            - Do not include explanations, markdown, or extra text.
-
-            Output format:
-            [
-            {{
-                "course_name": "Course Name",
-                "difficulty": "easy|medium|hard"
-            }}
-            ]
+            - Align with student interests and preferred difficulty.
+            - Return ONLY a raw JSON object, no markdown, no code blocks, no extra text.
+            
+            Return in this exact format:
+                {{
+                    "recommendations": [
+                        {{"course_name": "Course 1", "difficulty": "easy|medium|hard"}},
+                        {{"course_name": "Course 2", "difficulty": "easy|medium|hard"}}
+                    ]
+                }}
+            
                 """
 
         response=client.models.generate_content(model="gemini-2.5-flash",
             contents=prompt)
+        raw = response.text
         if not response or not response.text:
             return Response({"error": "didnt get response from gemini"},status=status.HTTP_502_BAD_GATEWAY)
 
-        return Response({'recommendations': response.text}
-                        , status=status.HTTP_200_OK)
+        clean = raw.strip()
+        if clean.startswith("```"):
+            clean = clean.split("```")[1]  # get content between backticks
+            if clean.startswith("json"):
+                clean = clean[4:]  # remove the word "json"
+            clean = clean.strip()
+        data = json.loads(clean)
+        return Response(data, status=status.HTTP_200_OK)
 
     except Exception as e:
         return Response(
             {"error":f"Gemini key error pay u poor: {str(e)}"},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 
 @api_view(['GET'])
 def test_gemini(request):
