@@ -4,12 +4,14 @@ from rest_framework import status
 from .models import Course, Major
 from .serializer import CourseSerializer, MajorSerializer
 from .prolog_engine import get_recommendations
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 
 import os
 from dotenv import load_dotenv
 
-from ..backend import settings
+from django.conf import settings
+
 
 
 @api_view(['GET'])
@@ -51,22 +53,46 @@ def recommend_prolog(request):
 
 @api_view(['POST'])
 def recommend_ai(request):
-    genai.configure(api_key=settings.GEMINI_API_KEY)
-    model= genai.GenerativeModel("gemini-1.5-flash")
+
     #we need to extract data and do prompt
     liked_courses=request.data.get('liked_courses', [])
     completed_courses=request.data.get('completed_courses', [])
     preferred_difficulty = request.data.get('preferred_difficulty',"")
     major = request.data.get('major', "")
     prerequisites=None
-    prompt=f""""
-    I am a {major} student.
-        I liked these courses: {', '.join(liked_courses)}.
-        I have completed: {', '.join(completed_courses)}.
-        I prefer {preferred_difficulty} difficulty.
-        Note the my university prerequisites in this major are: {prerequisites}
-        Recommend me new courses to take.
-        """
+    if not major:
+        return Response(
+            {"error": "major is required"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    try:
+        # I configured it setting.py so whenever you call do it from there
+        client= genai.Client(api_key=settings.GEMINI_API_KEY)
+
+        #Building the prompt and note this func doesnt save context
+        prompt = f""""
+            I am a {major} student.
+                I liked these courses: {', '.join(liked_courses)}.
+                I have completed: {', '.join(completed_courses)}.
+                I prefer {preferred_difficulty} difficulty.
+                Note the my university prerequisites in this major are: {prerequisites}
+                Recommend me new courses to take.
+                """
+
+        response=client.models.generate_content(model="gemini-2.0-flash",
+            contents=prompt)
+        if not response or not response.text:
+            return Response({"error": "didnt get response from gemini"},status=status.HTTP_502_BAD_GATEWAY)
+
+        return Response({'recommendations': response.text}
+                        , status=status.HTTP_200_OK)
+
+    except Exception as e:
+        return Response(
+            {"error":f"Gemini key error pay u poor: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 
     response=model.generate_content(prompt)
     return Response({'recommendations': response.text}, status=status.HTTP_200_OK)
