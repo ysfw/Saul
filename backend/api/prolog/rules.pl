@@ -1,5 +1,5 @@
-% course(CourseID, Difficulty, Department)
-% prerequisite(CourseID, RequiredCourseID)
+% course(Course, Difficulty, Topic)
+% prerequisite(Course, RequiredCourseID)
 
 :- dynamic completed/2.
 :- dynamic student_preference/2.
@@ -10,35 +10,35 @@
 
 
 % CSE
-course(math1, easy, computer_and_systems).
-course(math2, easy, computer_and_systems).
-course(linear_algebra, easy, computer_and_systems).
-course(differential_equations, medium, computer_and_systems).
-course(numerical_computing, medium, computer_and_systems).
-course(operations_research, medium, computer_and_systems).
-course(algorithm_design_analysis, hard, computer_and_systems).
-course(digital_modern_control, hard, computer_and_systems).
-course(compilers_intro, hard, computer_and_systems).
+course(math1, easy, mathematics).
+course(math2, easy, mathematics).
+course(linear_algebra, easy, mathematics).
+course(differential_equations, medium, mathematics).
+course(numerical_computing, medium, mathematics).
+course(operations_research, medium, mathematics).
+course(algorithm_design_analysis, hard, algorithms).
+course(digital_modern_control, hard, control).
+course(compilers_intro, hard, programming).
 
-course(mechanics1, easy, computer_and_systems).
-course(mechanics2, easy, computer_and_systems).
-course(probability_computer_apps, medium, computer_and_systems).
-course(statistical_methods, medium, computer_and_systems).
-course(discrete_structures, medium, computer_and_systems).
-course(data_structures_algorithms, medium, computer_and_systems).
-course(computer_networks, medium, computer_and_systems).
-course(embedded_control_systems, hard, computer_and_systems).
-course(parallel_distributed, hard, computer_and_systems).
-course(information_theory_multimedia, hard, computer_and_systems).
+course(mechanics1, easy, mechanics).
+course(mechanics2, easy, mechanics).
+course(probability_computer_apps, medium, mathematics).
+course(statistical_methods, medium, mathematics).
+course(discrete_structures, medium, mathematics).
+course(data_structures_algorithms, medium, algorithms).
+course(computer_networks, medium, networks).
+course(embedded_control_systems, hard, systems).
+course(parallel_distributed, hard, systems).
+course(information_theory_multimedia, hard, systems).
 
-course(physics1, easy, computer_and_systems).
-course(physics2, easy, computer_and_systems).
-course(programming1, easy, computer_and_systems).
-course(data_structures1, medium, computer_and_systems).
-course(programming2, medium, computer_and_systems).
-course(programming_languages, medium, computer_and_systems).
-course(software_engineering, medium, computer_and_systems).
-course(computer_architecture, hard, computer_and_systems).
+course(physics1, easy, physics).
+course(physics2, easy, physics).
+course(programming1, easy, programming).
+course(data_structures1, medium, algorithms).
+course(programming2, medium, programming).
+course(programming_languages, medium, programming).
+course(software_engineering, medium, software).
+course(computer_architecture, hard, hardware).
 
 % Prerequisites - CSE
 prerequisite(math2, math1).
@@ -69,36 +69,36 @@ prerequisite(computer_architecture, software_engineering).
 
 
 % ECE
-course(ece_math1, easy, electronics_and_communications).
-course(ece_math2, easy, electronics_and_communications).
-course(electric_circuits1, medium, electronics_and_communications).
-course(electric_electronic_meas, medium, electronics_and_communications).
-course(electric_circuits2, medium, electronics_and_communications).
-course(computational_mathematics, medium, electronics_and_communications).
-course(analog_communications, hard, electronics_and_communications).
-course(analog_ic, hard, electronics_and_communications).
-course(antenna, hard, electronics_and_communications).
-course(networks_ece, hard, electronics_and_communications).
+course(ece_math1, easy, mathematics).
+course(ece_math2, easy, mathematics).
+course(electric_circuits1, medium, circuits).
+course(electric_electronic_meas, medium, circuits).
+course(electric_circuits2, medium, circuits).
+course(computational_mathematics, medium, mathematics).
+course(analog_communications, hard, communications).
+course(analog_ic, hard, electronics).
+course(antenna, hard, communications).
+course(networks_ece, hard, networks).
 
-course(ece_mechanics1, easy, electronics_and_communications).
-course(ece_mechanics2, easy, electronics_and_communications).
-course(information_transmission, medium, electronics_and_communications).
-course(electronics1, medium, electronics_and_communications).
-course(electromagnetic_fields, medium, electronics_and_communications).
-course(power_systems, medium, electronics_and_communications).
-course(electromagnetic_waves, hard, electronics_and_communications).
-course(transmission_media, hard, electronics_and_communications).
-course(automatic_control, hard, electronics_and_communications).
+course(ece_mechanics1, easy, mechanics).
+course(ece_mechanics2, easy, mechanics).
+course(information_transmission, medium, communications).
+course(electronics1, medium, electronics).
+course(electromagnetic_fields, medium, physics).
+course(power_systems, medium, power).
+course(electromagnetic_waves, hard, physics).
+course(transmission_media, hard, communications).
+course(automatic_control, hard, control).
 
-course(ece_physics1, easy, electronics_and_communications).
-course(ece_physics2, easy, electronics_and_communications).
-course(energy_systems, medium, electronics_and_communications).
-course(digital_logic_design, medium, electronics_and_communications).
-course(solid_physics_devices, medium, electronics_and_communications).
-course(electronics2, medium, electronics_and_communications).
-course(digital_signal_processing, hard, electronics_and_communications).
-course(digital_communications_intro, hard, electronics_and_communications).
-course(digital_communications, hard, electronics_and_communications).
+course(ece_physics1, easy, physics).
+course(ece_physics2, easy, physics).
+course(energy_systems, medium, power).
+course(digital_logic_design, medium, hardware).
+course(solid_physics_devices, medium, physics).
+course(electronics2, medium, electronics).
+course(digital_signal_processing, hard, signals).
+course(digital_communications_intro, hard, communications).
+course(digital_communications, hard, communications).
 
 % Prerequisites - ECE
 prerequisite(ece_math2, ece_math1).
@@ -130,36 +130,36 @@ prerequisite(digital_communications, digital_communications_intro).
 
 
 % EPM
-course(epm_math1, easy, electrical_power_and_machines).
-course(epm_math2, easy, electrical_power_and_machines).
-course(electric_circuits_epm, medium, electrical_power_and_machines).
-course(electrical_electronic_meas, medium, electrical_power_and_machines).
-course(advanced_electric_circuits, medium, electrical_power_and_machines).
-course(power_transmission, hard, electrical_power_and_machines).
-course(electrical_power_equipment, hard, electrical_power_and_machines).
-course(energy_economics_safety, hard, electrical_power_and_machines).
-course(power_network_analysis, hard, electrical_power_and_machines).
-course(high_voltage, hard, electrical_power_and_machines).
+course(epm_math1, easy, mathematics).
+course(epm_math2, easy, mathematics).
+course(electric_circuits_epm, medium, circuits).
+course(electrical_electronic_meas, medium, circuits).
+course(advanced_electric_circuits, medium, circuits).
+course(power_transmission, hard, power).
+course(electrical_power_equipment, hard, power).
+course(energy_economics_safety, hard, power).
+course(power_network_analysis, hard, power).
+course(high_voltage, hard, power).
 
-course(epm_mechanics1, easy, electrical_power_and_machines).
-course(epm_mechanics2, easy, electrical_power_and_machines).
-course(info_transmission_epm, medium, electrical_power_and_machines).
-course(electronic_devices_circuits, medium, electrical_power_and_machines).
-course(microprocessors_epm, medium, electrical_power_and_machines).
-course(dc_machines_transformers, medium, electrical_power_and_machines).
-course(synchronous_machines, hard, electrical_power_and_machines).
-course(induction_machines, hard, electrical_power_and_machines).
-course(industrial_automation, hard, electrical_power_and_machines).
+course(epm_mechanics1, easy, mechanics).
+course(epm_mechanics2, easy, mechanics).
+course(info_transmission_epm, medium, communications).
+course(electronic_devices_circuits, medium, electronics).
+course(microprocessors_epm, medium, hardware).
+course(dc_machines_transformers, medium, power).
+course(synchronous_machines, hard, power).
+course(induction_machines, hard, power).
+course(industrial_automation, hard, control).
 
-course(epm_physics1, easy, electrical_power_and_machines).
-course(epm_physics2, easy, electrical_power_and_machines).
-course(power_systems_intro, medium, electrical_power_and_machines).
-course(logic_circuits_programming, medium, electrical_power_and_machines).
-course(mechanical_thermal_design, medium, electrical_power_and_machines).
-course(electronics_communications, medium, electrical_power_and_machines).
-course(power_electronics1, hard, electrical_power_and_machines).
-course(power_electronics2, hard, electrical_power_and_machines).
-course(electric_drive, hard, electrical_power_and_machines).
+course(epm_physics1, easy, physics).
+course(epm_physics2, easy, physics).
+course(power_systems_intro, medium, power).
+course(logic_circuits_programming, medium, hardware).
+course(mechanical_thermal_design, medium, mechanics).
+course(electronics_communications, medium, electronics).
+course(power_electronics1, hard, power).
+course(power_electronics2, hard, power).
+course(electric_drive, hard, power).
 
 % Prerequisites - EPM
 prerequisite(epm_math2, epm_math1).
@@ -190,36 +190,36 @@ prerequisite(electric_drive, power_electronics2).
 
 
 % CVE
-course(cve_math1, easy, civil).
-course(cve_math2, easy, civil).
-course(multivariable_calculus, medium, civil).
-course(numerical_methods_cve, medium, civil).
+course(cve_math1, easy, mathematics).
+course(cve_math2, easy, mathematics).
+course(multivariable_calculus, medium, mathematics).
+course(numerical_methods_cve, medium, mathematics).
 
-course(cve_mechanics1, easy, civil).
-course(cve_mechanics2, easy, civil).
-course(cve_mechanics3, medium, civil).
+course(cve_mechanics1, easy, mechanics).
+course(cve_mechanics2, easy, mechanics).
+course(cve_mechanics3, medium, mechanics).
 
-course(cve_physics1, easy, civil).
-course(cve_physics2, easy, civil).
+course(cve_physics1, easy, physics).
+course(cve_physics2, easy, physics).
 
-course(engineering_drawing1, easy, civil).
-course(engineering_drawing2, easy, civil).
-course(civil_drawing1, medium, civil).
-course(civil_drawing2, medium, civil).
+course(engineering_drawing1, easy, drawing).
+course(engineering_drawing2, easy, drawing).
+course(civil_drawing1, medium, drawing).
+course(civil_drawing2, medium, drawing).
 
-course(structural_analysis1, medium, civil).
-course(structural_mechanics, medium, civil).
-course(structural_analysis2, hard, civil).
+course(structural_analysis1, medium, structures).
+course(structural_mechanics, medium, structures).
+course(structural_analysis2, hard, structures).
 
-course(material_properties1, medium, civil).
-course(material_properties2, medium, civil).
-course(reinforced_concrete_basics, hard, civil).
+course(material_properties1, medium, materials).
+course(material_properties2, medium, materials).
+course(reinforced_concrete_basics, hard, structures).
 
-course(surveying_geomatics, medium, civil).
-course(surveying_topography1, medium, civil).
+course(surveying_geomatics, medium, surveying).
+course(surveying_topography1, medium, surveying).
 
-course(hydraulics1, medium, civil).
-course(hydraulics2, hard, civil).
+course(hydraulics1, medium, hydraulics).
+course(hydraulics2, hard, hydraulics).
 
 % Prerequisites - CVE
 prerequisite(cve_math2, cve_math1).
@@ -240,21 +240,21 @@ prerequisite(hydraulics2, hydraulics1).
 
 
 % MEC
-course(mec_math2, easy, mechanical).
-course(mec_math3, medium, mechanical).
-course(mec_math4_ode, medium, mechanical).
-course(mec_mechanics3, medium, mechanical).
-course(intro_thermal_eng, medium, mechanical).
-course(thermodynamics1, medium, mechanical).
-course(fluid_mechanics_basics, medium, mechanical).
-course(material_mechanics, medium, mechanical).
-course(machine_mechanics1, medium, mechanical).
-course(machine_mechanics2, hard, mechanical).
-course(strength_of_materials, hard, mechanical).
-course(mechanical_drawing1, easy, mechanical).
-course(mechanical_drawing2, medium, mechanical).
-course(numerical_analysis_mec, medium, mechanical).
-course(complex_analysis, hard, mechanical).
+course(mec_math2, easy, mathematics).
+course(mec_math3, medium, mathematics).
+course(mec_math4_ode, medium, mathematics).
+course(mec_mechanics3, medium, mechanics).
+course(intro_thermal_eng, medium, thermodynamics).
+course(thermodynamics1, medium, thermodynamics).
+course(fluid_mechanics_basics, medium, fluid_mechanics).
+course(material_mechanics, medium, materials).
+course(machine_mechanics1, medium, mechanics).
+course(machine_mechanics2, hard, mechanics).
+course(strength_of_materials, hard, materials).
+course(mechanical_drawing1, easy, drawing).
+course(mechanical_drawing2, medium, drawing).
+course(numerical_analysis_mec, medium, mathematics).
+course(complex_analysis, hard, mathematics).
 
 % Prerequisites - MEC
 prerequisite(mec_math3, mec_math2).
@@ -271,37 +271,37 @@ prerequisite(fluid_mechanics_basics, mec_mechanics3).
 
 
 % CHE
-course(che_math1, easy, chemical).
-course(che_math2, easy, chemical).
-course(che_math3, medium, chemical).
-course(che_math4, medium, chemical).
-course(organic_chemistry1, medium, chemical).
-course(organic_chemistry2, medium, chemical).
-course(inorganic_chemistry, medium, chemical).
-course(physical_chemistry1, medium, chemical).
-course(physical_chemistry2, medium, chemical).
-course(material_engineering, medium, chemical).
-course(metallurgy, medium, chemical).
-course(polymer_engineering, medium, chemical).
-course(mass_balance, medium, chemical).
-course(energy_balance, medium, chemical).
-course(thermo1, medium, chemical).
-course(thermo2, hard, chemical).
-course(mass_transfer, hard, chemical).
-course(separation1, hard, chemical).
-course(separation2, hard, chemical).
-course(separation3, hard, chemical).
-course(fluid_engineering, hard, chemical).
-course(heat_transfer, hard, chemical).
-course(kinetics, hard, chemical).
-course(modeling_simulation, hard, chemical).
-course(corrosion_engineering, hard, chemical).
-course(natural_gas, hard, chemical).
-course(control_che, hard, chemical).
-course(petroleum_refining, hard, chemical).
-course(chemical_industry, hard, chemical).
-course(chemical_design, hard, chemical).
-course(instrument_analysis, medium, chemical).
+course(che_math1, easy, mathematics).
+course(che_math2, easy, mathematics).
+course(che_math3, medium, mathematics).
+course(che_math4, medium, mathematics).
+course(organic_chemistry1, medium, chemistry).
+course(organic_chemistry2, medium, chemistry).
+course(inorganic_chemistry, medium, chemistry).
+course(physical_chemistry1, medium, chemistry).
+course(physical_chemistry2, medium, chemistry).
+course(material_engineering, medium, materials).
+course(metallurgy, medium, materials).
+course(polymer_engineering, medium, materials).
+course(mass_balance, medium, chemistry).
+course(energy_balance, medium, thermodynamics).
+course(thermo1, medium, thermodynamics).
+course(thermo2, hard, thermodynamics).
+course(mass_transfer, hard, chemistry).
+course(separation1, hard, chemistry).
+course(separation2, hard, chemistry).
+course(separation3, hard, chemistry).
+course(fluid_engineering, hard, fluid_mechanics).
+course(heat_transfer, hard, thermodynamics).
+course(kinetics, hard, chemistry).
+course(modeling_simulation, hard, systems).
+course(corrosion_engineering, hard, materials).
+course(natural_gas, hard, chemistry).
+course(control_che, hard, control).
+course(petroleum_refining, hard, chemistry).
+course(chemical_industry, hard, chemistry).
+course(chemical_design, hard, chemistry).
+course(instrument_analysis, medium, chemistry).
 
 % Prerequisites - CHE
 prerequisite(che_math2, che_math1).
@@ -330,24 +330,24 @@ prerequisite(chemical_design, chemical_industry).
 
 
 % PED
-course(ped_math3, medium, production).
-course(ped_mechanics3, medium, production).
-course(ped_material1, medium, production).
-course(design1, medium, production).
-course(design2, medium, production).
-course(design3, hard, production).
-course(dimensional_metrology, medium, production).
-course(probability_statistics_ped, medium, production).
-course(solid_mechanics_ped, medium, production).
-course(quality_control, hard, production).
-course(vibration_machine_dynamics, hard, production).
-course(plasticity_forming, hard, production).
-course(ergonomics, medium, production).
-course(machining_automation, hard, production).
-course(production_planning, hard, production).
-course(advanced_metrology, hard, production).
-course(engineering_economics, medium, production).
-course(project_management, medium, production).
+course(ped_math3, medium, mathematics).
+course(ped_mechanics3, medium, mechanics).
+course(ped_material1, medium, materials).
+course(design1, medium, design).
+course(design2, medium, design).
+course(design3, hard, design).
+course(dimensional_metrology, medium, manufacturing).
+course(probability_statistics_ped, medium, mathematics).
+course(solid_mechanics_ped, medium, mechanics).
+course(quality_control, hard, manufacturing).
+course(vibration_machine_dynamics, hard, mechanics).
+course(plasticity_forming, hard, manufacturing).
+course(ergonomics, medium, design).
+course(machining_automation, hard, manufacturing).
+course(production_planning, hard, manufacturing).
+course(advanced_metrology, hard, manufacturing).
+course(engineering_economics, medium, management).
+course(project_management, medium, management).
 
 % Prerequisites - PED
 prerequisite(dimensional_metrology, ped_math3).
@@ -364,35 +364,35 @@ prerequisite(production_planning, machining_automation).
 prerequisite(advanced_metrology, machining_automation).
 
 
-% NAME: Naval Architecture and Marine Engineering 
-course(name_math1, easy, naval_architecture).
-course(name_math2, easy, naval_architecture).
-course(name_math3, medium, naval_architecture).
-course(name_math4, medium, naval_architecture).
-course(name_mechanics1, easy, naval_architecture).
-course(name_mechanics2, easy, naval_architecture).
-course(name_mechanics3, medium, naval_architecture).
-course(engineering_materials, medium, naval_architecture).
-course(ship_drawing1, easy, naval_architecture).
-course(ship_drawing2, medium, naval_architecture).
-course(marine_structures1, medium, naval_architecture).
-course(ship_construction, medium, naval_architecture).
-course(machine_mechanics_name, medium, naval_architecture).
-course(fluid_mechanics_name, medium, naval_architecture).
-course(thermodynamics_name, medium, naval_architecture).
-course(power_stations, medium, naval_architecture).
-course(numerical_methods_name, medium, naval_architecture).
-course(marine_electrical, medium, naval_architecture).
-course(naval_architecture1, medium, naval_architecture).
-course(hydrodynamics_marine1, hard, naval_architecture).
-course(marine_structures2, hard, naval_architecture).
-course(ship_design1, hard, naval_architecture).
-course(naval_architecture2, hard, naval_architecture).
-course(hydrodynamics_marine2, hard, naval_architecture).
-course(ship_design2, hard, naval_architecture).
-course(marine_dynamics, hard, naval_architecture).
-course(combustion_engines, hard, naval_architecture).
-course(marine_engineering, hard, naval_architecture).
+% NAME: Naval Architecture and Marine Engineering
+course(name_math1, easy, mathematics).
+course(name_math2, easy, mathematics).
+course(name_math3, medium, mathematics).
+course(name_math4, medium, mathematics).
+course(name_mechanics1, easy, mechanics).
+course(name_mechanics2, easy, mechanics).
+course(name_mechanics3, medium, mechanics).
+course(engineering_materials, medium, materials).
+course(ship_drawing1, easy, drawing).
+course(ship_drawing2, medium, drawing).
+course(marine_structures1, medium, structures).
+course(ship_construction, medium, structures).
+course(machine_mechanics_name, medium, mechanics).
+course(fluid_mechanics_name, medium, fluid_mechanics).
+course(thermodynamics_name, medium, thermodynamics).
+course(power_stations, medium, power).
+course(numerical_methods_name, medium, mathematics).
+course(marine_electrical, medium, electronics).
+course(naval_architecture1, medium, naval).
+course(hydrodynamics_marine1, hard, naval).
+course(marine_structures2, hard, structures).
+course(ship_design1, hard, naval).
+course(naval_architecture2, hard, naval).
+course(hydrodynamics_marine2, hard, naval).
+course(ship_design2, hard, naval).
+course(marine_dynamics, hard, naval).
+course(combustion_engines, hard, thermodynamics).
+course(marine_engineering, hard, naval).
 
 % Prerequisites - NAME
 prerequisite(name_math2, name_math1).
@@ -417,29 +417,29 @@ prerequisite(marine_engineering, marine_structures2).
 
 
 % NRED
-course(nre_math1, easy, nuclear_and_radiation).
-course(nre_math2, easy, nuclear_and_radiation).
-course(nre_math3, medium, nuclear_and_radiation).
-course(nre_math4, medium, nuclear_and_radiation).
-course(nre_mechanics1, easy, nuclear_and_radiation).
-course(nre_mechanics2, easy, nuclear_and_radiation).
-course(nre_mechanics3, medium, nuclear_and_radiation).
-course(nre_physics1, easy, nuclear_and_radiation).
-course(nre_physics2, easy, nuclear_and_radiation).
-course(nuclear_engineering_intro, medium, nuclear_and_radiation).
-course(nuclear_materials, medium, nuclear_and_radiation).
-course(nuclear_physics, medium, nuclear_and_radiation).
-course(applied_thermodynamics_nre, medium, nuclear_and_radiation).
-course(electronics_basics_nre, medium, nuclear_and_radiation).
-course(nuclear_reactor_physics, hard, nuclear_and_radiation).
-course(nuclear_reactions_analysis, hard, nuclear_and_radiation).
-course(nuclear_heat_transfer, hard, nuclear_and_radiation).
-course(radiation_protection, hard, nuclear_and_radiation).
-course(nuclear_reactor_theory, hard, nuclear_and_radiation).
-course(nuclear_safety, hard, nuclear_and_radiation).
-course(nuclear_kinetics, hard, nuclear_and_radiation).
-course(nuclear_fuel_cycles, hard, nuclear_and_radiation).
-course(nuclear_hydroulics, hard, nuclear_and_radiation).
+course(nre_math1, easy, mathematics).
+course(nre_math2, easy, mathematics).
+course(nre_math3, medium, mathematics).
+course(nre_math4, medium, mathematics).
+course(nre_mechanics1, easy, mechanics).
+course(nre_mechanics2, easy, mechanics).
+course(nre_mechanics3, medium, mechanics).
+course(nre_physics1, easy, physics).
+course(nre_physics2, easy, physics).
+course(nuclear_engineering_intro, medium, nuclear).
+course(nuclear_materials, medium, materials).
+course(nuclear_physics, medium, nuclear).
+course(applied_thermodynamics_nre, medium, thermodynamics).
+course(electronics_basics_nre, medium, electronics).
+course(nuclear_reactor_physics, hard, nuclear).
+course(nuclear_reactions_analysis, hard, nuclear).
+course(nuclear_heat_transfer, hard, nuclear).
+course(radiation_protection, hard, nuclear).
+course(nuclear_reactor_theory, hard, nuclear).
+course(nuclear_safety, hard, nuclear).
+course(nuclear_kinetics, hard, nuclear).
+course(nuclear_fuel_cycles, hard, nuclear).
+course(nuclear_hydroulics, hard, nuclear).
 
 % Prerequisites - NRED
 prerequisite(nre_math2, nre_math1).
@@ -462,38 +462,38 @@ prerequisite(nuclear_hydroulics, nuclear_heat_transfer).
 
 
 % ARC
-course(arc_math1, easy, architectural).
-course(arc_math2, easy, architectural).
-course(arc_mechanics1, easy, architectural).
-course(arc_mechanics2, easy, architectural).
-course(arc_drawing1, easy, architectural).
-course(arc_drawing2, medium, architectural).
-course(architectural_design1, medium, architectural).
-course(architectural_design2, medium, architectural).
-course(architectural_design3, medium, architectural).
-course(architectural_design4, medium, architectural).
-course(architectural_design5, hard, architectural).
-course(architectural_design6, hard, architectural).
-course(architectural_design7, hard, architectural).
-course(building_construction1, medium, architectural).
-course(building_construction2, medium, architectural).
-course(building_construction3, medium, architectural).
-course(arch_history1, easy, architectural).
-course(arch_history2, medium, architectural).
-course(arch_history3, medium, architectural).
-course(arch_theories1, medium, architectural).
-course(arch_theories2, medium, architectural).
-course(arch_theories3, hard, architectural).
-course(color_theory, easy, architectural).
-course(environmental_studies, medium, architectural).
-course(technical_systems1, medium, architectural).
-course(technical_systems2, medium, architectural).
-course(soil_mechanics_arc, medium, architectural).
-course(urban_design, hard, architectural).
-course(interior_design, hard, architectural).
-course(executive_designs1, hard, architectural).
-course(executive_designs2, hard, architectural).
-course(executive_designs3, hard, architectural).
+course(arc_math1, easy, mathematics).
+course(arc_math2, easy, mathematics).
+course(arc_mechanics1, easy, mechanics).
+course(arc_mechanics2, easy, mechanics).
+course(arc_drawing1, easy, drawing).
+course(arc_drawing2, medium, drawing).
+course(architectural_design1, medium, design).
+course(architectural_design2, medium, design).
+course(architectural_design3, medium, design).
+course(architectural_design4, medium, design).
+course(architectural_design5, hard, design).
+course(architectural_design6, hard, design).
+course(architectural_design7, hard, design).
+course(building_construction1, medium, structures).
+course(building_construction2, medium, structures).
+course(building_construction3, medium, structures).
+course(arch_history1, easy, history).
+course(arch_history2, medium, history).
+course(arch_history3, medium, history).
+course(arch_theories1, medium, design).
+course(arch_theories2, medium, design).
+course(arch_theories3, hard, design).
+course(color_theory, easy, arts).
+course(environmental_studies, medium, environment).
+course(technical_systems1, medium, systems).
+course(technical_systems2, medium, systems).
+course(soil_mechanics_arc, medium, mechanics).
+course(urban_design, hard, design).
+course(interior_design, hard, design).
+course(executive_designs1, hard, design).
+course(executive_designs2, hard, design).
+course(executive_designs3, hard, design).
 
 % Prerequisites - ARC
 prerequisite(arc_math2, arc_math1).
@@ -525,15 +525,15 @@ prerequisite(interior_design, architectural_design5).
 
 
 % TED
-course(ted_math1, easy, textiles).
-course(ted_math2, easy, textiles).
-course(ted_mechanics1, easy, textiles).
-course(ted_mechanics2, easy, textiles).
-course(ted_mechanics3, medium, textiles).
-course(ted_physics1, easy, textiles).
-course(ted_physics2, easy, textiles).
+course(ted_math1, easy, mathematics).
+course(ted_math2, easy, mathematics).
+course(ted_mechanics1, easy, mechanics).
+course(ted_mechanics2, easy, mechanics).
+course(ted_mechanics3, medium, mechanics).
+course(ted_physics1, easy, physics).
+course(ted_physics2, easy, physics).
 course(fiber_raw_materials, medium, textiles).
-course(material_properties_ted, medium, textiles).
+course(material_properties_ted, medium, materials).
 course(spinning_technology1, medium, textiles).
 course(spinning_technology2, hard, textiles).
 course(long_fiber_spinning, hard, textiles).
@@ -545,13 +545,13 @@ course(tricot_structures, hard, textiles).
 course(nonwoven_fabrics, hard, textiles).
 course(textile_preparation, medium, textiles).
 course(textile_applications_stats, medium, textiles).
-course(design_theory_machines, medium, textiles).
-course(machine_drawing_ted, medium, textiles).
-course(thermal_dynamics_ted, medium, textiles).
-course(fluid_mechanics_ted, medium, textiles).
-course(numerical_methods_ted, medium, textiles).
-course(electrical_circuits_ted, medium, textiles).
-course(programming1_ted, easy, textiles).
+course(design_theory_machines, medium, design).
+course(machine_drawing_ted, medium, drawing).
+course(thermal_dynamics_ted, medium, thermodynamics).
+course(fluid_mechanics_ted, medium, fluid_mechanics).
+course(numerical_methods_ted, medium, mathematics).
+course(electrical_circuits_ted, medium, circuits).
+course(programming1_ted, easy, programming).
 course(garment_manufacturing, hard, textiles).
 course(textile_machinery_control, hard, textiles).
 course(textile_quality, hard, textiles).
@@ -583,29 +583,29 @@ prerequisite(fabric_evaluation, textile_quality).
 
 
 % Business
-course(intro_accounting, easy, business).
-course(intro_economics, easy, business).
-course(business_math, easy, business).
-course(intro_management, easy, business).
-course(business_english, easy, business).
-course(microeconomics, medium, business).
-course(macroeconomics, medium, business).
-course(financial_accounting, medium, business).
-course(cost_accounting, medium, business).
-course(statistics_business, medium, business).
-course(business_law, medium, business).
-course(marketing_principles, medium, business).
-course(organizational_behavior, medium, business).
-course(financial_management, hard, business).
-course(investment_analysis, hard, business).
-course(auditing, hard, business).
-course(taxation, hard, business).
-course(strategic_management, hard, business).
+course(intro_accounting, easy, accounting).
+course(intro_economics, easy, economics).
+course(business_math, easy, mathematics).
+course(intro_management, easy, management).
+course(business_english, easy, language).
+course(microeconomics, medium, economics).
+course(macroeconomics, medium, economics).
+course(financial_accounting, medium, accounting).
+course(cost_accounting, medium, accounting).
+course(statistics_business, medium, mathematics).
+course(business_law, medium, law).
+course(marketing_principles, medium, marketing).
+course(organizational_behavior, medium, management).
+course(financial_management, hard, finance).
+course(investment_analysis, hard, finance).
+course(auditing, hard, accounting).
+course(taxation, hard, accounting).
+course(strategic_management, hard, management).
 course(international_business, hard, business).
-course(managerial_accounting, hard, business).
-course(econometrics, hard, business).
-course(portfolio_management, hard, business).
-course(corporate_finance, hard, business).
+course(managerial_accounting, hard, accounting).
+course(econometrics, hard, economics).
+course(portfolio_management, hard, finance).
+course(corporate_finance, hard, finance).
 
 % Prerequisites - Business
 prerequisite(microeconomics, intro_economics).
@@ -627,29 +627,29 @@ prerequisite(marketing_principles, intro_management).
 
 
 % Medicine
-course(med_anatomy1, easy, medicine).
-course(med_physiology1, easy, medicine).
-course(med_biochemistry1, easy, medicine).
-course(med_histology1, easy, medicine).
-course(med_anatomy2, medium, medicine).
-course(med_physiology2, medium, medicine).
-course(med_biochemistry2, medium, medicine).
-course(med_histology2, medium, medicine).
-course(med_microbiology, medium, medicine).
-course(med_pathology1, medium, medicine).
-course(med_pharmacology1, medium, medicine).
-course(med_genetics, medium, medicine).
-course(med_immunology, medium, medicine).
-course(med_pathology2, hard, medicine).
-course(med_pharmacology2, hard, medicine).
+course(med_anatomy1, easy, anatomy).
+course(med_physiology1, easy, physiology).
+course(med_biochemistry1, easy, biochemistry).
+course(med_histology1, easy, biology).
+course(med_anatomy2, medium, anatomy).
+course(med_physiology2, medium, physiology).
+course(med_biochemistry2, medium, biochemistry).
+course(med_histology2, medium, biology).
+course(med_microbiology, medium, microbiology).
+course(med_pathology1, medium, pathology).
+course(med_pharmacology1, medium, pharmacology).
+course(med_genetics, medium, biology).
+course(med_immunology, medium, biology).
+course(med_pathology2, hard, pathology).
+course(med_pharmacology2, hard, pharmacology).
 course(internal_medicine, hard, medicine).
-course(surgery1, hard, medicine).
-course(surgery2, hard, medicine).
+course(surgery1, hard, surgery).
+course(surgery2, hard, surgery).
 course(pediatrics, hard, medicine).
 course(obstetrics_gynecology, hard, medicine).
 course(psychiatry, hard, medicine).
-course(ophthalmology, hard, medicine).
-course(orthopedics, hard, medicine).
+course(ophthalmology, hard, surgery).
+course(orthopedics, hard, surgery).
 course(radiology, hard, medicine).
 course(forensic_medicine, hard, medicine).
 course(community_medicine, medium, medicine).
@@ -681,28 +681,28 @@ prerequisite(forensic_medicine, med_pathology2).
 
 
 % Dentistry
-course(dent_anatomy, easy, dentistry).
-course(dent_physiology, easy, dentistry).
-course(dent_biochemistry, easy, dentistry).
-course(dent_histology, easy, dentistry).
-course(dent_microbiology, medium, dentistry).
-course(dent_pathology, medium, dentistry).
-course(dent_pharmacology, medium, dentistry).
+course(dent_anatomy, easy, anatomy).
+course(dent_physiology, easy, physiology).
+course(dent_biochemistry, easy, biochemistry).
+course(dent_histology, easy, biology).
+course(dent_microbiology, medium, microbiology).
+course(dent_pathology, medium, pathology).
+course(dent_pharmacology, medium, pharmacology).
 course(dental_materials1, medium, dentistry).
 course(dental_materials2, medium, dentistry).
-course(oral_anatomy, medium, dentistry).
-course(oral_physiology, medium, dentistry).
+course(oral_anatomy, medium, anatomy).
+course(oral_physiology, medium, physiology).
 course(oral_radiology, medium, dentistry).
 course(conservative_dentistry1, medium, dentistry).
 course(conservative_dentistry2, hard, dentistry).
-course(oral_surgery1, hard, dentistry).
-course(oral_surgery2, hard, dentistry).
+course(oral_surgery1, hard, surgery).
+course(oral_surgery2, hard, surgery).
 course(prosthodontics1, hard, dentistry).
 course(prosthodontics2, hard, dentistry).
 course(orthodontics, hard, dentistry).
 course(periodontics, hard, dentistry).
 course(pedodontics, hard, dentistry).
-course(oral_medicine, hard, dentistry).
+course(oral_medicine, hard, medicine).
 
 % Prerequisites - Dentistry
 prerequisite(dent_pathology, dent_physiology).
@@ -729,9 +729,9 @@ prerequisite(oral_medicine, dent_pharmacology).
 
 % Law
 course(intro_law, easy, law).
-course(arabic_language_law, easy, law).
+course(arabic_language_law, easy, language).
 course(islamic_jurisprudence, easy, law).
-course(legal_english, easy, law).
+course(legal_english, easy, language).
 course(civil_law1, medium, law).
 course(civil_law2, medium, law).
 course(criminal_law1, medium, law).
@@ -765,22 +765,22 @@ prerequisite(labor_law, civil_law2).
 prerequisite(intellectual_property_law, commercial_law2).
 
 
-% Agriculture and Life Sciences
-course(agri_botany, easy, agriculture).
-course(agri_zoology, easy, agriculture).
-course(agri_chemistry, easy, agriculture).
-course(agri_math, easy, agriculture).
-course(agri_physics, easy, agriculture).
-course(agri_biochemistry, medium, agriculture).
-course(agri_microbiology, medium, agriculture).
+% Agriculture
+course(agri_botany, easy, biology).
+course(agri_zoology, easy, biology).
+course(agri_chemistry, easy, chemistry).
+course(agri_math, easy, mathematics).
+course(agri_physics, easy, physics).
+course(agri_biochemistry, medium, biochemistry).
+course(agri_microbiology, medium, microbiology).
 course(soil_science, medium, agriculture).
-course(plant_physiology, medium, agriculture).
-course(genetics_agri, medium, agriculture).
+course(plant_physiology, medium, biology).
+course(genetics_agri, medium, biology).
 course(crop_science, medium, agriculture).
 course(animal_production, medium, agriculture).
-course(agri_economics, medium, agriculture).
+course(agri_economics, medium, economics).
 course(agri_engineering_basics, medium, agriculture).
-course(plant_pathology, hard, agriculture).
+course(plant_pathology, hard, biology).
 course(plant_breeding, hard, agriculture).
 course(agricultural_biotechnology, hard, agriculture).
 course(irrigation_drainage, hard, agriculture).
@@ -812,28 +812,28 @@ prerequisite(aquaculture, animal_production).
 
 
 % Fine Arts
-course(art_history1, easy, fine_arts).
-course(art_history2, medium, fine_arts).
-course(art_history3, hard, fine_arts).
-course(drawing_basics, easy, fine_arts).
-course(drawing_advanced, medium, fine_arts).
-course(color_theory_art, easy, fine_arts).
-course(painting1, easy, fine_arts).
-course(painting2, medium, fine_arts).
-course(painting3, hard, fine_arts).
-course(sculpture1, easy, fine_arts).
-course(sculpture2, medium, fine_arts).
-course(sculpture3, hard, fine_arts).
-course(graphic_design1, medium, fine_arts).
-course(graphic_design2, hard, fine_arts).
-course(printmaking1, medium, fine_arts).
-course(printmaking2, hard, fine_arts).
-course(photography, medium, fine_arts).
-course(digital_art, medium, fine_arts).
-course(interior_design_art, hard, fine_arts).
-course(ceramics, medium, fine_arts).
-course(art_criticism, hard, fine_arts).
-course(graduation_project_art, hard, fine_arts).
+course(art_history1, easy, history).
+course(art_history2, medium, history).
+course(art_history3, hard, history).
+course(drawing_basics, easy, arts).
+course(drawing_advanced, medium, arts).
+course(color_theory_art, easy, arts).
+course(painting1, easy, arts).
+course(painting2, medium, arts).
+course(painting3, hard, arts).
+course(sculpture1, easy, arts).
+course(sculpture2, medium, arts).
+course(sculpture3, hard, arts).
+course(graphic_design1, medium, design).
+course(graphic_design2, hard, design).
+course(printmaking1, medium, arts).
+course(printmaking2, hard, arts).
+course(photography, medium, arts).
+course(digital_art, medium, arts).
+course(interior_design_art, hard, design).
+course(ceramics, medium, arts).
+course(art_criticism, hard, arts).
+course(graduation_project_art, hard, arts).
 
 % Prerequisites - Fine Arts
 prerequisite(art_history2, art_history1).
@@ -855,28 +855,28 @@ prerequisite(graduation_project_art, painting3).
 
 
 % Science
-course(sci_math1, easy, science).
-course(sci_math2, medium, science).
-course(sci_physics1, easy, science).
-course(sci_physics2, medium, science).
-course(sci_chemistry1, easy, science).
-course(sci_chemistry2, medium, science).
-course(sci_biology1, easy, science).
-course(sci_biology2, medium, science).
-course(calculus, medium, science).
-course(linear_algebra_sci, medium, science).
-course(organic_chemistry_sci, medium, science).
-course(analytical_chemistry, medium, science).
-course(physical_chemistry_sci, hard, science).
-course(quantum_mechanics, hard, science).
-course(thermodynamics_sci, hard, science).
-course(molecular_biology, hard, science).
-course(marine_sciences, hard, science).
-course(environmental_sciences, hard, science).
-course(biochemistry_sci, hard, science).
-course(genetics_sci, hard, science).
-course(spectroscopy, hard, science).
-course(nuclear_physics_sci, hard, science).
+course(sci_math1, easy, mathematics).
+course(sci_math2, medium, mathematics).
+course(sci_physics1, easy, physics).
+course(sci_physics2, medium, physics).
+course(sci_chemistry1, easy, chemistry).
+course(sci_chemistry2, medium, chemistry).
+course(sci_biology1, easy, biology).
+course(sci_biology2, medium, biology).
+course(calculus, medium, mathematics).
+course(linear_algebra_sci, medium, mathematics).
+course(organic_chemistry_sci, medium, chemistry).
+course(analytical_chemistry, medium, chemistry).
+course(physical_chemistry_sci, hard, chemistry).
+course(quantum_mechanics, hard, physics).
+course(thermodynamics_sci, hard, physics).
+course(molecular_biology, hard, biology).
+course(marine_sciences, hard, biology).
+course(environmental_sciences, hard, environment).
+course(biochemistry_sci, hard, biochemistry).
+course(genetics_sci, hard, biology).
+course(spectroscopy, hard, chemistry).
+course(nuclear_physics_sci, hard, physics).
 
 % Prerequisites - Science
 prerequisite(sci_math2, sci_math1).
@@ -901,26 +901,26 @@ prerequisite(nuclear_physics_sci, quantum_mechanics).
 
 
 % Pharmacy
-course(pharm_chemistry1, easy, pharmacy).
-course(pharm_biochemistry1, easy, pharmacy).
-course(pharm_botany, easy, pharmacy).
-course(pharm_anatomy_physiology, easy, pharmacy).
-course(pharm_chemistry2, medium, pharmacy).
-course(pharm_biochemistry2, medium, pharmacy).
-course(pharm_microbiology, medium, pharmacy).
-course(pharm_organic_chemistry, medium, pharmacy).
+course(pharm_chemistry1, easy, chemistry).
+course(pharm_biochemistry1, easy, biochemistry).
+course(pharm_botany, easy, biology).
+course(pharm_anatomy_physiology, easy, physiology).
+course(pharm_chemistry2, medium, chemistry).
+course(pharm_biochemistry2, medium, biochemistry).
+course(pharm_microbiology, medium, microbiology).
+course(pharm_organic_chemistry, medium, chemistry).
 course(pharmacognosy1, medium, pharmacy).
 course(pharmacognosy2, hard, pharmacy).
 course(pharmaceutics1, medium, pharmacy).
 course(pharmaceutics2, hard, pharmacy).
-course(pharmacology1, medium, pharmacy).
-course(pharmacology2, hard, pharmacy).
+course(pharmacology1, medium, pharmacology).
+course(pharmacology2, hard, pharmacology).
 course(pharmaceutical_analysis, hard, pharmacy).
 course(clinical_pharmacy, hard, pharmacy).
-course(toxicology, hard, pharmacy).
+course(toxicology, hard, pharmacology).
 course(pharmaceutical_technology, hard, pharmacy).
 course(drug_design, hard, pharmacy).
-course(pharmacy_management, medium, pharmacy).
+course(pharmacy_management, medium, management).
 
 % Prerequisites - Pharmacy
 prerequisite(pharm_chemistry2, pharm_chemistry1).
@@ -943,12 +943,12 @@ prerequisite(drug_design, pharmacology2).
 
 
 % Nursing
-course(nursing_anatomy, easy, nursing).
-course(nursing_physiology, easy, nursing).
-course(nursing_biochemistry, easy, nursing).
-course(nursing_microbiology, easy, nursing).
+course(nursing_anatomy, easy, anatomy).
+course(nursing_physiology, easy, physiology).
+course(nursing_biochemistry, easy, biochemistry).
+course(nursing_microbiology, easy, microbiology).
 course(nursing_fundamentals, easy, nursing).
-course(nursing_pharmacology, medium, nursing).
+course(nursing_pharmacology, medium, pharmacology).
 course(nursing_nutrition, medium, nursing).
 course(medical_surgical_nursing1, medium, nursing).
 course(medical_surgical_nursing2, hard, nursing).
@@ -957,7 +957,7 @@ course(maternity_nursing, hard, nursing).
 course(psychiatric_nursing, hard, nursing).
 course(community_nursing, medium, nursing).
 course(critical_care_nursing, hard, nursing).
-course(nursing_management, medium, nursing).
+course(nursing_management, medium, management).
 course(nursing_research, hard, nursing).
 
 % Prerequisites - Nursing
@@ -975,21 +975,21 @@ prerequisite(nursing_research, medical_surgical_nursing2).
 
 
 % Veterinary Medicine
-course(vet_anatomy1, easy, veterinary).
-course(vet_histology, easy, veterinary).
-course(vet_biochemistry, easy, veterinary).
-course(vet_physiology, easy, veterinary).
-course(vet_anatomy2, medium, veterinary).
-course(vet_microbiology, medium, veterinary).
-course(vet_parasitology, medium, veterinary).
-course(vet_pharmacology1, medium, veterinary).
-course(vet_pathology1, medium, veterinary).
+course(vet_anatomy1, easy, anatomy).
+course(vet_histology, easy, biology).
+course(vet_biochemistry, easy, biochemistry).
+course(vet_physiology, easy, physiology).
+course(vet_anatomy2, medium, anatomy).
+course(vet_microbiology, medium, microbiology).
+course(vet_parasitology, medium, biology).
+course(vet_pharmacology1, medium, pharmacology).
+course(vet_pathology1, medium, pathology).
 course(vet_nutrition, medium, veterinary).
-course(vet_pharmacology2, hard, veterinary).
-course(vet_pathology2, hard, veterinary).
-course(vet_surgery1, hard, veterinary).
-course(vet_surgery2, hard, veterinary).
-course(vet_medicine_internal, hard, veterinary).
+course(vet_pharmacology2, hard, pharmacology).
+course(vet_pathology2, hard, pathology).
+course(vet_surgery1, hard, surgery).
+course(vet_surgery2, hard, surgery).
+course(vet_medicine_internal, hard, medicine).
 course(vet_infectious_diseases, hard, veterinary).
 course(food_hygiene, hard, veterinary).
 course(vet_reproduction, hard, veterinary).
@@ -1018,21 +1018,21 @@ prerequisite(vet_forensic, vet_pathology2).
 
 % Tourism and Hotels
 course(intro_tourism, easy, tourism).
-course(tourism_english, easy, tourism).
-course(tourism_geography, easy, tourism).
-course(egyptian_history, easy, tourism).
-course(tourism_economics, medium, tourism).
-course(hotel_management_basics, easy, tourism).
+course(tourism_english, easy, language).
+course(tourism_geography, easy, geography).
+course(egyptian_history, easy, history).
+course(tourism_economics, medium, economics).
+course(hotel_management_basics, easy, management).
 course(food_beverage_management, medium, tourism).
 course(housekeeping_management, medium, tourism).
 course(front_office_management, medium, tourism).
-course(tourism_law, medium, tourism).
+course(tourism_law, medium, law).
 course(heritage_tourism, medium, tourism).
 course(eco_tourism, medium, tourism).
 course(event_management, hard, tourism).
-course(hotel_accounting, medium, tourism).
-course(strategic_tourism_management, hard, tourism).
-course(tourism_marketing, hard, tourism).
+course(hotel_accounting, medium, accounting).
+course(strategic_tourism_management, hard, management).
+course(tourism_marketing, hard, marketing).
 course(cultural_tourism, hard, tourism).
 course(tourism_research, hard, tourism).
 
@@ -1049,23 +1049,24 @@ prerequisite(cultural_tourism, heritage_tourism).
 prerequisite(tourism_research, strategic_tourism_management).
 prerequisite(eco_tourism, tourism_geography).
 
+
 % Education
-course(edu_psychology, easy, education).
-course(edu_philosophy, easy, education).
-course(edu_sociology, easy, education).
+course(edu_psychology, easy, psychology).
+course(edu_philosophy, easy, philosophy).
+course(edu_sociology, easy, sociology).
 course(teaching_methods_general, easy, education).
 course(curriculum_design, medium, education).
 course(educational_measurement, medium, education).
-course(child_development, medium, education).
+course(child_development, medium, psychology).
 course(teaching_methods_science, medium, education).
 course(teaching_methods_math, medium, education).
 course(educational_technology, medium, education).
 course(special_education, medium, education).
 course(classroom_management, medium, education).
 course(educational_research, hard, education).
-course(educational_administration, hard, education).
+course(educational_administration, hard, management).
 course(comparative_education, hard, education).
-course(counseling_guidance, hard, education).
+course(counseling_guidance, hard, psychology).
 
 % Prerequisites - Education
 prerequisite(curriculum_design, teaching_methods_general).
@@ -1083,21 +1084,21 @@ prerequisite(counseling_guidance, edu_psychology).
 
 
 % Physical Education
-course(anatomy_phys_ed, easy, physical_education).
-course(physiology_phys_ed, easy, physical_education).
-course(sports_history, easy, physical_education).
-course(sports_psychology, medium, physical_education).
-course(biomechanics, medium, physical_education).
-course(sports_nutrition, medium, physical_education).
-course(track_field, easy, physical_education).
-course(swimming, easy, physical_education).
-course(team_sports, easy, physical_education).
-course(gymnastics, medium, physical_education).
-course(sports_medicine, hard, physical_education).
-course(sports_training_theory, medium, physical_education).
-course(sports_management, hard, physical_education).
-course(physical_therapy_basics, hard, physical_education).
-course(sports_research, hard, physical_education).
+course(anatomy_phys_ed, easy, anatomy).
+course(physiology_phys_ed, easy, physiology).
+course(sports_history, easy, history).
+course(sports_psychology, medium, psychology).
+course(biomechanics, medium, mechanics).
+course(sports_nutrition, medium, nutrition).
+course(track_field, easy, sports).
+course(swimming, easy, sports).
+course(team_sports, easy, sports).
+course(gymnastics, medium, sports).
+course(sports_medicine, hard, medicine).
+course(sports_training_theory, medium, sports).
+course(sports_management, hard, management).
+course(physical_therapy_basics, hard, medicine).
+course(sports_research, hard, sports).
 
 % Prerequisites - Physical Education
 prerequisite(physiology_phys_ed, anatomy_phys_ed).
@@ -1112,11 +1113,10 @@ prerequisite(physical_therapy_basics, sports_medicine).
 prerequisite(sports_research, sports_training_theory).
 
 
-
 % Recommend a course that has a prerequisite
 recommend(Student, Course) :-
-    course(Course, Difficulty, Dept),
-    student_preference(Student, Dept),
+    course(Course, Difficulty, Topic),
+    student_preference(Student, Topic),
     prefers_difficulty(Student, Difficulty),
     not(completed(Student, Course)),
     prerequisite(Course, Pre),
@@ -1124,8 +1124,8 @@ recommend(Student, Course) :-
 
 % For courses with NO prerequisites
 recommend(Student, Course) :-
-    course(Course, Difficulty, Dept),
-    student_preference(Student, Dept),
+    course(Course, Difficulty, Topic),
+    student_preference(Student, Topic),
     prefers_difficulty(Student, Difficulty),
     not(completed(Student, Course)),
     not(prerequisite(Course, _)).
