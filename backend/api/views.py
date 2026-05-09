@@ -16,9 +16,8 @@ from django.conf import settings
 
 @api_view(['GET'])
 def get_majors(request):
-    majors = Major.objects.all()
-    serializer = MajorSerializer(majors, many=True)
-    return Response(serializer.data)
+    majors = Major.objects.values_list('name', flat=True)
+    return Response(list(majors))
 
 
 @api_view(['GET'])
@@ -71,12 +70,30 @@ def recommend_ai(request):
 
         #Building the prompt and note this func doesnt save context
         prompt = f""""
-            I am a {major} student.
-                I liked these courses: {', '.join(liked_courses)}.
-                I have completed: {', '.join(completed_courses)}.
-                I prefer {preferred_difficulty} difficulty.
-                Note the my university prerequisites in this major are: {prerequisites}
-                Recommend me new courses to take.
+            You are a university course recommendation system.
+            Based on the student's information, recommend suitable new courses.
+            Student major: {major}
+            Liked courses:
+            {', '.join(liked_courses)}
+            Completed courses:
+            {', '.join(completed_courses)}
+            Preferred difficulty: {preferred_difficulty}
+            University prerequisite rules: {prerequisites}
+
+            Requirements:
+            - Only recommend courses the student is eligible to take based on prerequisites.
+            - Do not recommend courses already completed.
+            - Recommendations should align with the student's interests and preferred difficulty.
+            - Return ONLY valid JSON.
+            - Do not include explanations, markdown, or extra text.
+
+            Output format:
+            [
+            {{
+                "course_name": "Course Name",
+                "difficulty": "easy|medium|hard"
+            }}
+            ]
                 """
 
         response=client.models.generate_content(model="gemini-2.5-flash",
