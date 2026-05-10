@@ -1,4 +1,10 @@
 /backend/.env
+/backend/.venv/
+/backend/venv/
+/backend/__pycache__/
+/backend/*.pyc
+/backend/db.sqlite3
+
 # Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
 
 # dependencies

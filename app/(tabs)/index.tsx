@@ -1,5 +1,5 @@
 import { Picker } from '@react-native-picker/picker';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { styles } from './index.styles';
 
-const API_IP = '192.168.1.100'; // Replace with your computer's local IP address
+const API_IP = '192.168.1.7'; // Replaced with your actual local IP address
 
 const MAJORS: string[] = [
   "physical_education",
@@ -64,26 +64,6 @@ export default function HomeScreen() {
     return input.split(',').map((item: string) => formatString(item)).filter(Boolean);
   };
 
-  // Fetch available courses from DB on component mount
-  useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        const response = await fetch(`http://${API_IP}:8000/api/courses/`);
-        if (response.ok) {
-          const data = await response.json();
-          // Assuming data is an array of strings
-          if (Array.isArray(data)) {
-            const parsedCourses = data.map((c: string) => formatString(c));
-            setDbCourses(parsedCourses.filter(Boolean));
-          }
-        }
-      } catch (err) {
-        console.error('Failed to fetch available courses:', err);
-      }
-    };
-    fetchCourses();
-  }, []);
-
   // Handles the API request based on the selected recommendation type (Prolog/AI)
   const handleFetchRecommendations = async (type: 'prolog' | 'ai') => {
     setLoading(true);
@@ -93,16 +73,29 @@ export default function HomeScreen() {
     const parsedLikedCourses = parseInput(likedCourses);
     const parsedCompletedCourses = parseInput(completedCourses);
 
-    // Give feedback if DB courses are loaded and user entered invalid courses (only for Prolog)
-    if (type === 'prolog' && dbCourses.length > 0) {
-      const invalidCourses = [...parsedLikedCourses, ...parsedCompletedCourses].filter(
-        c => !dbCourses.includes(c)
-      );
+    // If Prolog, fetch courses for the selected major first, then validate
+    if (type === 'prolog') {
+      try {
+        const getResponse = await fetch(`http://${API_IP}:8000/api/courses/?major=${major}`);
+        if (getResponse.ok) {
+          const data = await getResponse.json();
+          if (Array.isArray(data)) {
+            const parsedCourses = data.map((c: string) => formatString(c));
+            
+            const invalidCourses = [...parsedLikedCourses, ...parsedCompletedCourses].filter(
+              c => !parsedCourses.includes(c)
+            );
 
-      if (invalidCourses.length > 0) {
-        setError(`The following courses are missing from the database: ${invalidCourses.join(', ')}`);
-        setLoading(false);
-        return;
+            if (invalidCourses.length > 0) {
+              setError(`The following courses are missing from the ${major} major: ${invalidCourses.join(', ')}`);
+              setLoading(false);
+              return;
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch courses for validation:', err);
+        // Depending on requirements, we can continue or return here. We'll proceed if DB check fails.
       }
     }
 
@@ -149,23 +142,28 @@ export default function HomeScreen() {
   const renderRecommendations = () => {
     if (!recommendations) return null;
 
-    // If the response is an array of strings (Prolog), render each recommendation as a bullet point
+    // If the response is an array of strings (Prolog) or objects (AI), render each recommendation as a card
     if (Array.isArray(recommendations)) {
       return (
         <View style={styles.resultsContainer}>
           <Text style={styles.resultsTitle}>Recommendations:</Text>
           {recommendations.length > 0 ? (
-            recommendations.map((rec: string, index: number) => (
-              <View key={index} style={styles.recommendationCard}>
-                <Text style={styles.recommendationText}>• {rec}</Text>
-              </View>
-            ))
+            recommendations.map((rec: any, index: number) => {
+              // Handle AI Object Response Format
+              if (typeof rec === 'object' && rec !== null) {
+                return (
+                  <View key={index} style={styles.recommendationCard}>
+                    <Text style={styles.recommendationText}>• {rec.course_name} (Difficulty: {rec.difficulty})</Text>
+                  </View>
+                );
+              }
+            })
           ) : (
             <Text style={styles.resultText}>No recommendations found.</Text>
           )}
         </View>
       );
-    } // If the response is a single string (AI), render it as a block of text
+    } // If the response is a single string, render it as a block of text
     else if (typeof recommendations === 'string') {
       return (
         <View style={styles.resultsContainer}>
