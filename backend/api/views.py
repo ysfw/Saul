@@ -53,12 +53,12 @@ def recommend_prolog(request):
     }
     Returns: { "recommendations": [...course names...] }
     """
-    liked = request.data.get('liked_topics', [])
+    liked_topics = request.data.get('liked_topics', [])
     completed = request.data.get('completed_courses', [])
     preferred = request.data.get('preferred_difficulty', 'medium')
     major = request.data.get('major', None)
 
-    recommendations = get_recommendations(liked, completed, preferred, major)
+    recommendations = get_recommendations(liked_topics, completed, preferred, major)
     return Response({'recommendations': recommendations})
 
 

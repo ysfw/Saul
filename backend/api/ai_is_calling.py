@@ -7,16 +7,15 @@ from .models import Major, Course
 
 
 def get_ai_recommended_courses(request):
-    topics=request.data.get('topics', [])
+    liked_topics = request.data.get('liked_topics', [])
     preferred_difficulty = request.data.get('preferred_difficulty', "")
     major = request.data.get('major', "")
     completed_courses = request.data.get('completed_courses', [])
 
-    liked_courses=extract_liked_courses(topics)
     prerequisites=extract_major_prerequisites(major) #we have map here
 
     client = genai.Client(api_key=settings.GEMINI_API_KEY)
-    prompt = build_prompt(major,liked_courses,completed_courses,preferred_difficulty,prerequisites)
+    prompt = build_prompt(major,liked_topics,completed_courses,preferred_difficulty,prerequisites)
 
     response = client.models.generate_content(
         model="models/gemini-2.5-flash",
@@ -55,7 +54,7 @@ def extract_major_prerequisites(major_name):
         return {}
 
 #Functional para
-def build_prompt(major,liked_courses,completed_courses,
+def build_prompt(major,liked_topics,completed_courses,
                  preferred_difficulty,
                  prerequisites):
     return f"""
@@ -63,7 +62,7 @@ def build_prompt(major,liked_courses,completed_courses,
             Based on the student's information, recommend suitable new courses.
 
             Student major: {major}
-            Liked courses: {', '.join(liked_courses)}
+            Liked topics: {', '.join(liked_topics)}
             Completed courses: {', '.join(completed_courses)}
             Preferred difficulty: {preferred_difficulty}
 

@@ -15,6 +15,7 @@ import { styles } from './index.styles';
 const API_IP = '192.168.1.7'; // Replaced with your actual local IP address
 
 const MAJORS: string[] = [
+  "computer_and_systems",
   "physical_education",
   "education",
   "tourism",
@@ -43,14 +44,14 @@ const MAJORS: string[] = [
 export default function HomeScreen() {
   // State variables for form inputs
   const [major, setMajor] = useState(MAJORS[0]);
-  const [likedCourses, setLikedCourses] = useState('');
+  const [likedTopics, setLikedTopics] = useState('');
   const [completedCourses, setCompletedCourses] = useState('');
   const [preferredDifficulty, setPreferredDifficulty] = useState('medium');
-  
+
   // State variables for fetching status, results, and errors
-  const [dbCourses, setDbCourses] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [recommendations, setRecommendations] = useState<string[] | string | null>(null);
+  const [recommendationsType, setRecommendationsType] = useState<'Prolog' | 'AI' | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   // Format individual string: lowercase, replace spaces with underscores, trim whitespace
@@ -70,7 +71,7 @@ export default function HomeScreen() {
     setRecommendations(null);
     setError(null);
 
-    const parsedLikedCourses = parseInput(likedCourses);
+    const parsedLikedTopics = parseInput(likedTopics);
     const parsedCompletedCourses = parseInput(completedCourses);
 
     // If Prolog, fetch courses for the selected major first, then validate
@@ -81,28 +82,32 @@ export default function HomeScreen() {
           const data = await getResponse.json();
           if (Array.isArray(data)) {
             const parsedCourses = data.map((c: string) => formatString(c));
-            
-            const invalidCourses = [...parsedLikedCourses, ...parsedCompletedCourses].filter(
+
+            const invalidCourses = [...parsedCompletedCourses].filter(
               c => !parsedCourses.includes(c)
             );
 
             if (invalidCourses.length > 0) {
-              setError(`The following courses are missing from the ${major} major: ${invalidCourses.join(', ')}`);
+              setError(`The following completed courses are missing from the ${major} major: ${invalidCourses.join(', ')}`);
               setLoading(false);
               return;
             }
           }
         }
+        setRecommendationsType('Prolog');
       } catch (err) {
         console.error('Failed to fetch courses for validation:', err);
         // Depending on requirements, we can continue or return here. We'll proceed if DB check fails.
       }
     }
+    else {
+      setRecommendationsType('AI');
+    }
 
     // Request body
     const payload = {
-      major: major, // Major is already from the predefined list
-      liked_courses: parsedLikedCourses,
+      major: major,
+      liked_topics: parsedLikedTopics,
       completed_courses: parsedCompletedCourses,
       preferred_difficulty: preferredDifficulty.trim().toLowerCase(),
     };
@@ -146,7 +151,7 @@ export default function HomeScreen() {
     if (Array.isArray(recommendations)) {
       return (
         <View style={styles.resultsContainer}>
-          <Text style={styles.resultsTitle}>Recommendations:</Text>
+          <Text style={styles.resultsTitle}>{recommendationsType} Recommendations:</Text>
           {recommendations.length > 0 ? (
             recommendations.map((rec: any, index: number) => {
               // Handle AI Object Response Format
@@ -181,7 +186,7 @@ export default function HomeScreen() {
   // Main UI render code (Form inputs, Action Buttons, States, and Results container) 
   return (
     // KeyboardAvoidingView ensures that the form is not hidden by the keyboard on mobile devices
-    <KeyboardAvoidingView 
+    <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
@@ -202,24 +207,24 @@ export default function HomeScreen() {
               dropdownIconColor="#FFFFFF"
             >
               {MAJORS.map((m) => (
-                <Picker.Item 
-                  key={m} 
-                  label={m.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())} 
-                  value={m} 
-                  style={styles.pickerItem} 
+                <Picker.Item
+                  key={m}
+                  label={m.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
+                  value={m}
+                  style={styles.pickerItem}
                 />
               ))}
             </Picker>
           </View>
         </View>
         <View style={styles.formGroup}>
-          <Text style={styles.label}>Liked Courses (comma-separated)</Text>
+          <Text style={styles.label}>Liked Topics (comma-separated)</Text>
           <TextInput
             style={styles.input}
-            placeholder="e.g. math_1, intro_to_programming"
+            placeholder="e.g. mathematics, algorithms"
             placeholderTextColor="#888"
-            value={likedCourses}
-            onChangeText={setLikedCourses}
+            value={likedTopics}
+            onChangeText={setLikedTopics}
           />
         </View>
         <View style={styles.formGroup}>
