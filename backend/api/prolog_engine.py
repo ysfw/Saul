@@ -37,17 +37,25 @@ def get_recommendations(liked_topics: list, completed_courses: list, preferred_d
         prolog.assertz(f"student_major('{major}')")
 
     recommendations = []
+    seen = set()
     try:
-        query = prolog.query(f"recommend(Course)")
+        query = prolog.query(f"recommend(Course, Difficulty)")
         for soln in query:
-            # We extract the bound variable 'Course' from the solution dictionary
             course_name = soln["Course"]
+            difficulty = soln["Difficulty"]
             
-            # PySwip sometimes returns byte strings; decoding it if needed
+            # PySwip sometimes returns byte strings; decoding if needed
             if isinstance(course_name, bytes):
                 course_name = course_name.decode("utf-8")
-                
-            recommendations.append(course_name)
+            if isinstance(difficulty, bytes):
+                difficulty = difficulty.decode("utf-8")
+
+            if course_name not in seen:
+                seen.add(course_name)
+                recommendations.append({
+                    "course_name": course_name,
+                    "difficulty": difficulty
+                })
     except Exception as e:
         print(f"Prolog Query Error: {e}")
 
@@ -57,5 +65,4 @@ def get_recommendations(liked_topics: list, completed_courses: list, preferred_d
     list(prolog.query(f"retractall(prefers_difficulty(_))"))
     list(prolog.query(f"retractall(student_major(_))"))
     
-    # Return unique recommendations
-    return list(set(recommendations))
+    return recommendations

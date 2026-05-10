@@ -9,7 +9,6 @@ class MajorSerializer(serializers.ModelSerializer):
 
 
 class CourseSerializer(serializers.ModelSerializer):
-    prerequisites = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     majors = MajorSerializer(many=True, read_only=True)
 
     class Meta:

@@ -26,9 +26,17 @@ def get_majors(request):
 
 @api_view(['GET'])
 def get_courses(request):
-    courses = Course.objects.all()
-    serializer = CourseSerializer(courses, many=True)
-    return Response(serializer.data)
+    major_name = request.query_params.get('major', None)
+    if not major_name:
+        return Response({"error": "major query parameter is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        major = Major.objects.get(name=major_name)
+    except Major.DoesNotExist:
+        return Response({"error": f"Major '{major_name}' not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    courses = Course.objects.filter(majors=major).values_list('name', flat=True)
+    return Response(list(courses))
 
 
 @api_view(['POST'])

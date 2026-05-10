@@ -1114,18 +1114,36 @@ prerequisite(physical_therapy_basics, sports_medicine).
 prerequisite(sports_research, sports_training_theory).
 
 
-% Recommend a course that has a prerequisite
+% Recommend a course where ALL prerequisites are completed
 recommend(Course) :-
     course(Course, Difficulty, Topic, Major),
     student_major(Major),
     student_preference(Topic),
     prefers_difficulty(Difficulty),
     not(completed(Course)),
-    prerequisite(Course, Pre),
-    completed(Pre).
+    prerequisite(Course, _),
+    \+ (prerequisite(Course, Pre), \+ completed(Pre)).
 
 % For courses with NO prerequisites
 recommend(Course) :-
+    course(Course, Difficulty, Topic, Major),
+    student_major(Major),
+    student_preference(Topic),
+    prefers_difficulty(Difficulty),
+    not(completed(Course)),
+    not(prerequisite(Course, _)).
+
+
+recommend(Course, Difficulty) :-
+    course(Course, Difficulty, Topic, Major),
+    student_major(Major),
+    student_preference(Topic),
+    prefers_difficulty(Difficulty),
+    not(completed(Course)),
+    prerequisite(Course, _),
+    \+ (prerequisite(Course, Pre), \+ completed(Pre)).
+
+recommend(Course, Difficulty) :-
     course(Course, Difficulty, Topic, Major),
     student_major(Major),
     student_preference(Topic),
