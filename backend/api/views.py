@@ -38,14 +38,14 @@ def recommend_prolog(request):
 
     Expected request body:
     {
-        "liked_courses": ["Algorithms", "Databases"],
+        "liked_topics": ["Algorithms", "Databases"],
         "completed_courses": ["Intro Programming", "Data Structures"],
         "preferred_difficulty": "hard",   // optional, defaults to "medium"
         "major": "Computer Science"        // optional
     }
     Returns: { "recommendations": [...course names...] }
     """
-    liked = request.data.get('liked_courses', [])
+    liked = request.data.get('liked_topics', [])
     completed = request.data.get('completed_courses', [])
     preferred = request.data.get('preferred_difficulty', 'medium')
     major = request.data.get('major', None)

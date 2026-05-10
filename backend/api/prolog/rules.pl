@@ -4,6 +4,7 @@
 :- dynamic completed/1.
 :- dynamic student_preference/1.
 :- dynamic prefers_difficulty/1.
+:- dynamic student_major/1.
 
 :- discontiguous course/4.
 :- discontiguous prerequisite/2.
@@ -1116,6 +1117,7 @@ prerequisite(sports_research, sports_training_theory).
 % Recommend a course that has a prerequisite
 recommend(Course) :-
     course(Course, Difficulty, Topic, Major),
+    student_major(Major),
     student_preference(Topic),
     prefers_difficulty(Difficulty),
     not(completed(Course)),
@@ -1125,6 +1127,7 @@ recommend(Course) :-
 % For courses with NO prerequisites
 recommend(Course) :-
     course(Course, Difficulty, Topic, Major),
+    student_major(Major),
     student_preference(Topic),
     prefers_difficulty(Difficulty),
     not(completed(Course)),
