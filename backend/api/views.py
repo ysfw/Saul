@@ -6,6 +6,7 @@ from rest_framework import status
 from .models import Course, Major
 from .serializer import CourseSerializer, MajorSerializer
 from .prolog_engine import get_recommendations
+from .ai_is_calling import get_ai_recommended_courses
 from google import genai
 from google.genai import types
 
@@ -18,15 +19,24 @@ from django.conf import settings
 
 @api_view(['GET'])
 def get_majors(request):
-    majors = Major.objects.values_list('name', flat=True)
-    return Response(list(majors))
+    majors = Major.objects.all()
+    serializer = MajorSerializer(majors, many=True)
+    return Response(serializer.data)
 
 
 @api_view(['GET'])
 def get_courses(request):
-    courses = Course.objects.all()
-    serializer = CourseSerializer(courses, many=True)
-    return Response(serializer.data)
+    major_name = request.query_params.get('major', None)
+    if not major_name:
+        return Response({"error": "major query parameter is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        major = Major.objects.get(name=major_name)
+    except Major.DoesNotExist:
+        return Response({"error": f"Major '{major_name}' not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    courses = Course.objects.filter(majors=major).values_list('name', flat=True)
+    return Response(list(courses))
 
 
 @api_view(['POST'])
@@ -36,14 +46,14 @@ def recommend_prolog(request):
 
     Expected request body:
     {
-        "liked_courses": ["Algorithms", "Databases"],
+        "liked_topics": ["Algorithms", "Databases"],
         "completed_courses": ["Intro Programming", "Data Structures"],
         "preferred_difficulty": "hard",   // optional, defaults to "medium"
         "major": "Computer Science"        // optional
     }
     Returns: { "recommendations": [...course names...] }
     """
-    liked = request.data.get('liked_courses', [])
+    liked = request.data.get('liked_topics', [])
     completed = request.data.get('completed_courses', [])
     preferred = request.data.get('preferred_difficulty', 'medium')
     major = request.data.get('major', None)
@@ -54,99 +64,20 @@ def recommend_prolog(request):
 
 @api_view(['POST'])
 def recommend_ai(request):
+   major= request.data.get('major', "")
+   if not major:
+       return Response({"error": "major is required"}, status=status.HTTP_400_BAD_REQUEST)
 
-    #we need to extract data and do prompt
-    liked_courses=request.data.get('liked_courses', [])
-    completed_courses=request.data.get('completed_courses', [])
-    preferred_difficulty = request.data.get('preferred_difficulty',"")
-    major = request.data.get('major', "")
-    prerequisites=None
-    if not major:
-        return Response(
-            {"error": "major is required"},
-            status=status.HTTP_400_BAD_REQUEST
-        )
-    try:
-        # I configured it setting.py so whenever you call do it from there
-        client= genai.Client(api_key=settings.GEMINI_API_KEY)
+   try:
+       data = get_ai_recommended_courses(request)
+       return Response(data, status=status.HTTP_200_OK)
 
-        #Building the prompt and note this func doesnt save context
-        prompt = f"""
-            You are a university course recommendation system.
-            Based on the student's information, recommend suitable new courses.
-            Student major: {major}
-            Liked courses:
-            {', '.join(liked_courses)}
-            Completed courses:
-            {', '.join(completed_courses)}
-            Preferred difficulty: {preferred_difficulty}
-            University prerequisite rules: {prerequisites}
+   except json.JSONDecodeError:
+       return Response({"error": "AI returned invalid JSON"}, status=500)
 
-            Requirements:
-            - Only recommend courses the student is eligible to take based on prerequisites.
-            - Do not recommend courses already completed.
-            - Align with student interests and preferred difficulty.
-            - Return ONLY a raw JSON object, no markdown, no code blocks, no extra text.
-            
-            Return in this exact format:
-                {{
-                    "recommendations": [
-                        {{"course_name": "Course 1", "difficulty": "easy|medium|hard"}},
-                        {{"course_name": "Course 2", "difficulty": "easy|medium|hard"}}
-                    ]
-                }}
-            
-                """
-
-        response=client.models.generate_content(model="gemini-2.5-flash",
-            contents=prompt)
-        raw = response.text
-        if not response or not response.text:
-            return Response({"error": "didnt get response from gemini"},status=status.HTTP_502_BAD_GATEWAY)
-
-        clean = raw.strip()
-        if clean.startswith("```"):
-            clean = clean.split("```")[1]  # get content between backticks
-            if clean.startswith("json"):
-                clean = clean[4:]  # remove the word "json"
-            clean = clean.strip()
-        data = json.loads(clean)
-        return Response(data, status=status.HTTP_200_OK)
-
-    except Exception as e:
-        return Response(
-            {"error":f"Gemini key error pay u poor: {str(e)}"},
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+   except Exception as e:
+       return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 
-@api_view(['GET'])
-def test_gemini(request):
-    try:
-        client = genai.Client(api_key=settings.GEMINI_API_KEY)
 
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents="say hi"  # absolute minimum prompt
-        )
-
-        return Response({"reply": response.text})
-
-    except Exception as e:
-        return Response({"error": str(e)}, status=500)
-    response=model.generate_content(prompt)
-    return Response({'recommendations': response.text}, status=status.HTTP_200_OK)
-
-
-    """
-    Expected request body:
-    {
-        "liked_courses": ["Algorithms", "Databases"],
-        "completed_courses": ["Intro Programming", "Data Structures"],
-        "preferred_difficulty": "hard",
-        "major": "Computer Science"
-    }
-    Returns: { "recommendations": [...course names...] }
-    """
-    # Gemini wiring goes here.
-    return Response({'recommendations': []}, status=status.HTTP_200_OK)
