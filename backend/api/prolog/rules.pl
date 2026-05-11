@@ -1114,8 +1114,11 @@ prerequisite(physical_therapy_basics, sports_medicine).
 prerequisite(sports_research, sports_training_theory).
 
 
+
+% Strict Search
+
 % Recommend a course where ALL prerequisites are completed
-recommend(Course) :-
+recommend(Course, Difficulty) :-
     course(Course, Difficulty, Topic, Major),
     student_major(Major),
     student_preference(Topic),
@@ -1123,9 +1126,10 @@ recommend(Course) :-
     not(completed(Course)),
     prerequisite(Course, _),
     \+ (prerequisite(Course, Pre), \+ completed(Pre)).
+
 
 % For courses with NO prerequisites
-recommend(Course) :-
+recommend(Course, Difficulty) :-
     course(Course, Difficulty, Topic, Major),
     student_major(Major),
     student_preference(Topic),
@@ -1134,19 +1138,45 @@ recommend(Course) :-
     not(prerequisite(Course, _)).
 
 
-recommend(Course, Difficulty) :-
+
+% Dropping Difficulty filter
+
+% Recommend a course where ALL prerequisites are completed
+recommend__relaxed1(Course, Difficulty) :-
     course(Course, Difficulty, Topic, Major),
     student_major(Major),
     student_preference(Topic),
-    prefers_difficulty(Difficulty),
     not(completed(Course)),
     prerequisite(Course, _),
     \+ (prerequisite(Course, Pre), \+ completed(Pre)).
 
-recommend(Course, Difficulty) :-
+
+% For courses with NO prerequisites
+recommend__relaxed1(Course, Difficulty) :-
     course(Course, Difficulty, Topic, Major),
     student_major(Major),
     student_preference(Topic),
-    prefers_difficulty(Difficulty),
     not(completed(Course)),
     not(prerequisite(Course, _)).
+
+
+
+% Dropping Topic filter too
+
+% Recommend a course where ALL prerequisites are completed
+recommend_any_difficulty(Course, Difficulty) :-
+    course(Course, Difficulty, _, Major),
+    student_major(Major),
+    not(completed(Course)),
+    prerequisite(Course, _),
+    \+ (prerequisite(Course, Pre), \+ completed(Pre)).
+
+
+% For courses with NO prerequisites
+recommend_any_difficulty_topic(Course, Difficulty) :-
+    course(Course, Difficulty, _, Major),
+    student_major(Major),
+    not(completed(Course)),
+    not(prerequisite(Course, _)).
+
+

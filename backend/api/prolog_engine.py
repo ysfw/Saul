@@ -56,6 +56,48 @@ def get_recommendations(liked_topics: list, completed_courses: list, preferred_d
                     "course_name": course_name,
                     "difficulty": difficulty
                 })
+
+        # if strict filtering matches nothing, drop difficulty filter 
+        if not recommendations:
+            query = prolog.query(f"recommend_any_difficulty(Course, Difficulty)")
+            for soln in query:
+                course_name = soln["Course"]
+                difficulty = soln["Difficulty"]
+                
+                # PySwip sometimes returns byte strings; decoding if needed
+                if isinstance(course_name, bytes):
+                    course_name = course_name.decode("utf-8")
+                if isinstance(difficulty, bytes):
+                    difficulty = difficulty.decode("utf-8")
+
+                if course_name not in seen:
+                    seen.add(course_name)
+                    recommendations.append({
+                        "course_name": course_name,
+                        "difficulty": difficulty
+                    })
+
+        # if last filtering matches nothing, drop topic filter too 
+        if not recommendations:
+            query = prolog.query(f"recommend_any_difficulty_topic(Course, Difficulty)")
+            for soln in query:
+                course_name = soln["Course"]
+                difficulty = soln["Difficulty"]
+                
+                # PySwip sometimes returns byte strings; decoding if needed
+                if isinstance(course_name, bytes):
+                    course_name = course_name.decode("utf-8")
+                if isinstance(difficulty, bytes):
+                    difficulty = difficulty.decode("utf-8")
+
+                if course_name not in seen:
+                    seen.add(course_name)
+                    recommendations.append({
+                        "course_name": course_name,
+                        "difficulty": difficulty
+                    })
+        
+
     except Exception as e:
         print(f"Prolog Query Error: {e}")
 
