@@ -13,7 +13,7 @@ def get_ai_recommended_courses(request):
     prerequisites=extract_major_prerequisites(major) #we have map here
 
     client = genai.Client(api_key=settings.GEMINI_API_KEY)
-    prompt = build_prompt(major,liked_topics,completed_courses,preferred_difficulty,prerequisites)
+    prompt = build_prompt(major,liked_courses,completed_courses,preferred_difficulty,prerequisites)
 
     response = client.models.generate_content(
         model="models/gemini-2.5-flash",
