@@ -1,8 +1,6 @@
 import json
-
 from django.conf import settings
 from google import genai
-
 from .models import Major, Course
 
 
@@ -11,7 +9,7 @@ def get_ai_recommended_courses(request):
     preferred_difficulty = request.data.get('preferred_difficulty', "")
     major = request.data.get('major', "")
     completed_courses = request.data.get('completed_courses', [])
-
+    liked_courses = extract_liked_courses(liked_topics)
     prerequisites=extract_major_prerequisites(major) #we have map here
 
     client = genai.Client(api_key=settings.GEMINI_API_KEY)
@@ -54,7 +52,7 @@ def extract_major_prerequisites(major_name):
         return {}
 
 #Functional para
-def build_prompt(major,liked_topics,completed_courses,
+def build_prompt(major,liked_courses,completed_courses,
                  preferred_difficulty,
                  prerequisites):
     return f"""
@@ -62,7 +60,7 @@ def build_prompt(major,liked_topics,completed_courses,
             Based on the student's information, recommend suitable new courses.
 
             Student major: {major}
-            Liked topics: {', '.join(liked_topics)}
+            Liked courses: {', '.join(liked_courses)}
             Completed courses: {', '.join(completed_courses)}
             Preferred difficulty: {preferred_difficulty}
 
