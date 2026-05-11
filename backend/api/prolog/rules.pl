@@ -1142,7 +1142,7 @@ recommend(Course, Difficulty) :-
 % Dropping Difficulty filter
 
 % Recommend a course where ALL prerequisites are completed
-recommend__relaxed1(Course, Difficulty) :-
+recommend_any_difficulty(Course, Difficulty) :-
     course(Course, Difficulty, Topic, Major),
     student_major(Major),
     student_preference(Topic),
@@ -1152,7 +1152,7 @@ recommend__relaxed1(Course, Difficulty) :-
 
 
 % For courses with NO prerequisites
-recommend__relaxed1(Course, Difficulty) :-
+recommend_any_difficulty(Course, Difficulty) :-
     course(Course, Difficulty, Topic, Major),
     student_major(Major),
     student_preference(Topic),
@@ -1164,7 +1164,7 @@ recommend__relaxed1(Course, Difficulty) :-
 % Dropping Topic filter too
 
 % Recommend a course where ALL prerequisites are completed
-recommend_any_difficulty(Course, Difficulty) :-
+recommend_any_difficulty_topic(Course, Difficulty) :-
     course(Course, Difficulty, _, Major),
     student_major(Major),
     not(completed(Course)),

@@ -77,7 +77,7 @@ def get_recommendations(liked_topics: list, completed_courses: list, preferred_d
                         "difficulty": difficulty
                     })
 
-        # if last filtering matches nothing, drop topic filter too 
+        # if dropping difficulty matches nothing, drop topic filter too 
         if not recommendations:
             query = prolog.query(f"recommend_any_difficulty_topic(Course, Difficulty)")
             for soln in query:
