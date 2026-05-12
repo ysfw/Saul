@@ -1,0 +1,37 @@
+/* Global styles for web platform */
+
+/* Fix dropdown/select styling on web */
+select {
+  background-color: #111111 !important;
+  color: #F5E6C8 !important;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23D4A843'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 20px;
+  padding-right: 36px !important;
+}
+
+select option {
+  background-color: #111111 !important;
+  color: #F5E6C8 !important;
+  padding: 10px 14px;
+  border-bottom: 1px solid #222222;
+}
+
+select option:checked {
+  background: linear-gradient(0deg, #D4A843 0%, #D4A843 100%) !important;
+  color: #000000 !important;
+}
+
+select:focus {
+  outline: none;
+  border-color: #D4A843 !important;
+}
+
+/* Force the dropdown list itself to be opaque */
+select::-ms-expand {
+  display: none;
+}

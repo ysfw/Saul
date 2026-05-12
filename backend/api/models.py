@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Major(models.Model):
@@ -99,3 +100,12 @@ class Course(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class StudentProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    major = models.ForeignKey(Major, on_delete=models.SET_NULL, null=True, blank=True)
+    completed_courses = models.ManyToManyField(Course, blank=True, related_name='completed_by')
+
+    def __str__(self):
+        return f"{self.user.username}'s profile"
