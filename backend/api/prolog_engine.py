@@ -25,7 +25,6 @@ def get_recommendations(liked_topics: list, completed_courses: list, preferred_d
     # Track whether the user provided preferences
     has_difficulty_preference = bool(preferred_difficulty)
     has_liked_topics = bool(liked_topics)
-    has_completed_courses = bool(completed_courses)
 
     # Assert the user's context dynamically into Prolog
     # we wrap the string values in quotes to ensure Prolog treats them as atoms, not variables
