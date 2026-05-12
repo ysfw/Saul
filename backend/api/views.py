@@ -39,6 +39,21 @@ def get_courses(request):
     return Response(list(courses))
 
 
+@api_view(['GET'])
+def get_topics(request):
+    major_name = request.query_params.get('major', None)
+    if not major_name:
+        return Response({"error": "major query parameter is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        major = Major.objects.get(name=major_name)
+    except Major.DoesNotExist:
+        return Response({"error": f"Major '{major_name}' not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    topics = Course.objects.filter(majors=major).values_list('topic', flat=True).distinct()
+    return Response(list(topics))
+
+
 @api_view(['POST'])
 def recommend_prolog(request):
     """
@@ -55,11 +70,13 @@ def recommend_prolog(request):
     """
     liked_topics = request.data.get('liked_topics', [])
     completed = request.data.get('completed_courses', [])
-    preferred = request.data.get('preferred_difficulty', 'medium')
+    # preferred difficulty is optional; if not provided, pass None so Prolog can treat it as absent
+    preferred = request.data.get('preferred_difficulty', None)
     major = request.data.get('major', None)
 
-    recommendations = get_recommendations(liked_topics, completed, preferred, major)
-    return Response({'recommendations': recommendations})
+    result = get_recommendations(liked_topics, completed, preferred, major)
+    # result is expected to be a dict with keys 'recommendations' and 'filter_message'
+    return Response(result)
 
 
 @api_view(['POST'])

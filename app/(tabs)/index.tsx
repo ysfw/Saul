@@ -1,18 +1,17 @@
-import { Picker } from '@react-native-picker/picker';
-import React, { useState } from 'react';
+import { Picker } from "@react-native-picker/picker";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
-} from 'react-native';
-import { styles } from './index.styles';
+} from "react-native";
+import { styles } from "./index.styles";
 
-const API_IP = '192.168.1.7'; // Replaced with your actual local IP address
+const API_IP = "192.168.1.2"; // Replaced with your actual local IP address
 
 const MAJORS: string[] = [
   "computer_and_systems",
@@ -38,92 +37,111 @@ const MAJORS: string[] = [
   "mechanical",
   "civil",
   "electrical_power_and_machines",
-  "electronics_and_communications"
+  "electronics_and_communications",
 ];
 
 export default function HomeScreen() {
   // State variables for form inputs
   const [major, setMajor] = useState(MAJORS[0]);
-  const [likedTopics, setLikedTopics] = useState('');
-  const [completedCourses, setCompletedCourses] = useState('');
-  const [preferredDifficulty, setPreferredDifficulty] = useState('medium');
+  const [likedTopics, setLikedTopics] = useState<string[]>([]);
+  const [completedCourses, setCompletedCourses] = useState<string[]>([]);
+  const [preferredDifficulty, setPreferredDifficulty] = useState("");
+
+  // Available options based on selected major
+  const [availableCourses, setAvailableCourses] = useState<string[]>([]);
+  const [availableTopics, setAvailableTopics] = useState<string[]>([]);
+  const [prologFilterMessage, setPrologFilterMessage] = useState<string | null>(
+    null,
+  );
 
   // State variables for fetching status, results, and errors
   const [loading, setLoading] = useState(false);
-  const [recommendations, setRecommendations] = useState<string[] | string | null>(null);
-  const [recommendationsType, setRecommendationsType] = useState<'Prolog' | 'AI' | null>(null);
+  const [recommendations, setRecommendations] = useState<
+    string[] | string | null
+  >(null);
+  const [recommendationsType, setRecommendationsType] = useState<
+    "Prolog" | "AI" | null
+  >(null);
   const [error, setError] = useState<string | null>(null);
 
   // Format individual string: lowercase, replace spaces with underscores, trim whitespace
   const formatString = (str: string) => {
-    return str.trim().toLowerCase().replace(/\s+/g, '_');
+    return str.trim().toLowerCase().replace(/\s+/g, "_");
   };
 
   // Helper to convert comma-separated strings into an array of formatted items
   const parseInput = (input: string) => {
     if (!input.trim()) return [];
-    return input.split(',').map((item: string) => formatString(item)).filter(Boolean);
+    return input
+      .split(",")
+      .map((item: string) => formatString(item))
+      .filter(Boolean);
   };
 
   // Handles the API request based on the selected recommendation type (Prolog/AI)
-  const handleFetchRecommendations = async (type: 'prolog' | 'ai') => {
+  const handleFetchRecommendations = async (type: "prolog" | "ai") => {
     setLoading(true);
     setRecommendations(null);
     setError(null);
 
-    const parsedLikedTopics = parseInput(likedTopics);
-    const parsedCompletedCourses = parseInput(completedCourses);
+    const parsedLikedTopics = likedTopics.map(formatString);
+    const parsedCompletedCourses = completedCourses.map(formatString);
 
     // If Prolog, fetch courses for the selected major first, then validate
-    if (type === 'prolog') {
+    if (type === "prolog") {
       try {
-        const getResponse = await fetch(`http://${API_IP}:8000/api/courses/?major=${major}`);
+        const getResponse = await fetch(
+          `http://${API_IP}:8000/api/courses/?major=${major}`,
+        );
         if (getResponse.ok) {
           const data = await getResponse.json();
           if (Array.isArray(data)) {
             const parsedCourses = data.map((c: string) => formatString(c));
 
             const invalidCourses = [...parsedCompletedCourses].filter(
-              c => !parsedCourses.includes(c)
+              (c) => !parsedCourses.includes(c),
             );
 
             if (invalidCourses.length > 0) {
-              setError(`The following completed courses are missing from the ${major} major: ${invalidCourses.join(', ')}`);
+              setError(
+                `The following completed courses are missing from the ${major} major: ${invalidCourses.join(", ")}`,
+              );
               setLoading(false);
               return;
             }
           }
         }
-        setRecommendationsType('Prolog');
+        setRecommendationsType("Prolog");
       } catch (err) {
-        console.error('Failed to fetch courses for validation:', err);
+        console.error("Failed to fetch courses for validation:", err);
         // Depending on requirements, we can continue or return here. We'll proceed if DB check fails.
       }
-    }
-    else {
-      setRecommendationsType('AI');
+    } else {
+      setRecommendationsType("AI");
     }
 
     // Request body
-    const payload = {
+    const payload: any = {
       major: major,
       liked_topics: parsedLikedTopics,
       completed_courses: parsedCompletedCourses,
-      preferred_difficulty: preferredDifficulty.trim().toLowerCase(),
     };
 
+    if (preferredDifficulty && preferredDifficulty.trim()) {
+      payload.preferred_difficulty = preferredDifficulty.trim().toLowerCase();
+    }
+
     const endpoint =
-      type === 'prolog'
+      type === "prolog"
         ? `http://${API_IP}:8000/api/recommend/prolog/`
         : `http://${API_IP}:8000/api/recommend/ai/`;
-
 
     // send POST request to the appropriate endpoint and handle the response
     try {
       const response = await fetch(endpoint, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(payload),
       });
@@ -133,11 +151,17 @@ export default function HomeScreen() {
       }
 
       const data = await response.json();
-      console.log('Received response:', data);
+      console.log("Received response:", data);
+      // If Prolog returns structured result, capture filter message
+      if (type === "prolog" && data.filter_message) {
+        setPrologFilterMessage(data.filter_message);
+      } else {
+        setPrologFilterMessage(null);
+      }
       setRecommendations(data.recommendations);
     } catch (err: any) {
-      console.error('Fetch Error:', err);
-      setError(err.message || 'Something went wrong while fetching.');
+      console.error("Fetch Error:", err);
+      setError(err.message || "Something went wrong while fetching.");
     } finally {
       setLoading(false);
     }
@@ -151,14 +175,23 @@ export default function HomeScreen() {
     if (Array.isArray(recommendations)) {
       return (
         <View style={styles.resultsContainer}>
-          <Text style={styles.resultsTitle}>{recommendationsType} Recommendations:</Text>
+          <Text style={styles.resultsTitle}>
+            {recommendationsType} Recommendations:
+          </Text>
+          {prologFilterMessage ? (
+            <Text style={[styles.resultText, { marginBottom: 16 }]}>
+              Note: {prologFilterMessage}
+            </Text>
+          ) : null}
           {recommendations.length > 0 ? (
             recommendations.map((rec: any, index: number) => {
               // Handle AI Object Response Format
-              if (typeof rec === 'object' && rec !== null) {
+              if (typeof rec === "object" && rec !== null) {
                 return (
                   <View key={index} style={styles.recommendationCard}>
-                    <Text style={styles.recommendationText}>• {rec.course_name} (Difficulty: {rec.difficulty})</Text>
+                    <Text style={styles.recommendationText}>
+                      • {rec.course_name} (Difficulty: {rec.difficulty})
+                    </Text>
                   </View>
                 );
               }
@@ -169,7 +202,7 @@ export default function HomeScreen() {
         </View>
       );
     } // If the response is a single string, render it as a block of text
-    else if (typeof recommendations === 'string') {
+    else if (typeof recommendations === "string") {
       return (
         <View style={styles.resultsContainer}>
           <Text style={styles.resultsTitle}>Expected Advice:</Text>
@@ -183,12 +216,59 @@ export default function HomeScreen() {
     return null;
   };
 
-  // Main UI render code (Form inputs, Action Buttons, States, and Results container) 
+  // Fetch available courses and topics for the selected major
+  useEffect(() => {
+    const loadOptions = async () => {
+      try {
+        const coursesResp = await fetch(
+          `http://${API_IP}:8000/api/courses/?major=${major}`,
+        );
+        if (coursesResp.ok) {
+          const coursesData = await coursesResp.json();
+          setAvailableCourses(coursesData.map((c: string) => formatString(c)));
+        } else {
+          setAvailableCourses([]);
+        }
+
+        const topicsResp = await fetch(
+          `http://${API_IP}:8000/api/topics/?major=${major}`,
+        );
+        if (topicsResp.ok) {
+          const topicsData = await topicsResp.json();
+          setAvailableTopics(topicsData.map((t: string) => formatString(t)));
+        } else {
+          setAvailableTopics([]);
+        }
+        // clear selections when major changes
+        setLikedTopics([]);
+        setCompletedCourses([]);
+      } catch (e) {
+        console.error("Failed to load options for major", e);
+      }
+    };
+
+    loadOptions();
+  }, [major]);
+
+  const toggleSelection = (
+    value: string,
+    list: string[],
+    setter: (v: string[]) => void,
+  ) => {
+    const normalized = formatString(value);
+    if (list.includes(normalized)) {
+      setter(list.filter((i) => i !== normalized));
+    } else {
+      setter([...list, normalized]);
+    }
+  };
+
+  // Main UI render code (Form inputs, Action Buttons, States, and Results container)
   return (
     // KeyboardAvoidingView ensures that the form is not hidden by the keyboard on mobile devices
     <KeyboardAvoidingView
       style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       {/* ScrollView allows the content to be scrollable, especially when the keyboard is open or on smaller screens */}
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -209,7 +289,9 @@ export default function HomeScreen() {
               {MAJORS.map((m) => (
                 <Picker.Item
                   key={m}
-                  label={m.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
+                  label={m
+                    .replace(/_/g, " ")
+                    .replace(/\b\w/g, (c) => c.toUpperCase())}
                   value={m}
                   style={styles.pickerItem}
                 />
@@ -218,41 +300,79 @@ export default function HomeScreen() {
           </View>
         </View>
         <View style={styles.formGroup}>
-          <Text style={styles.label}>Liked Topics (comma-separated)</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="e.g. mathematics, algorithms"
-            placeholderTextColor="#888"
-            value={likedTopics}
-            onChangeText={setLikedTopics}
-          />
+          <Text style={styles.label}>Liked Topics</Text>
+          <View style={styles.optionsContainer}>
+            {availableTopics.length === 0 ? (
+              <Text style={styles.helpText}>
+                No topics available for this major.
+              </Text>
+            ) : (
+              availableTopics.map((t) => (
+                <TouchableOpacity
+                  key={t}
+                  style={[
+                    styles.optionItem,
+                    likedTopics.includes(t) ? styles.optionSelected : null,
+                  ]}
+                  onPress={() =>
+                    toggleSelection(t, likedTopics, setLikedTopics)
+                  }
+                >
+                  <Text style={styles.optionText}>{t.replace(/_/g, " ")}</Text>
+                </TouchableOpacity>
+              ))
+            )}
+          </View>
         </View>
+
         <View style={styles.formGroup}>
-          <Text style={styles.label}>Completed Courses (comma-separated)</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="e.g. intro_to_cs, physics_1"
-            placeholderTextColor="#888"
-            value={completedCourses}
-            onChangeText={setCompletedCourses}
-          />
+          <Text style={styles.label}>Completed Courses</Text>
+          <View style={styles.optionsContainer}>
+            {availableCourses.length === 0 ? (
+              <Text style={styles.helpText}>
+                No courses available for this major.
+              </Text>
+            ) : (
+              availableCourses.map((c) => (
+                <TouchableOpacity
+                  key={c}
+                  style={[
+                    styles.optionItem,
+                    completedCourses.includes(c) ? styles.optionSelected : null,
+                  ]}
+                  onPress={() =>
+                    toggleSelection(c, completedCourses, setCompletedCourses)
+                  }
+                >
+                  <Text style={styles.optionText}>{c.replace(/_/g, " ")}</Text>
+                </TouchableOpacity>
+              ))
+            )}
+          </View>
         </View>
+
         <View style={styles.formGroup}>
-          <Text style={styles.label}>Preferred Difficulty</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="easy, medium, hard"
-            placeholderTextColor="#888"
-            value={preferredDifficulty}
-            onChangeText={setPreferredDifficulty}
-          />
+          <Text style={styles.label}>Preferred Difficulty (optional)</Text>
+          <View style={[styles.input, styles.pickerContainer]}>
+            <Picker
+              selectedValue={preferredDifficulty}
+              onValueChange={(itemValue) => setPreferredDifficulty(itemValue)}
+              style={styles.picker}
+              dropdownIconColor="#FFFFFF"
+            >
+              <Picker.Item label="No preference" value="" />
+              <Picker.Item label="Easy" value="easy" />
+              <Picker.Item label="Medium" value="medium" />
+              <Picker.Item label="Hard" value="hard" />
+            </Picker>
+          </View>
         </View>
 
         {/* Action Buttons for fetching recommendations */}
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={[styles.button, styles.primaryButton]}
-            onPress={() => handleFetchRecommendations('prolog')}
+            onPress={() => handleFetchRecommendations("prolog")}
             disabled={loading}
           >
             <Text style={styles.buttonText}>Get Prolog Recommendations</Text>
@@ -260,7 +380,7 @@ export default function HomeScreen() {
 
           <TouchableOpacity
             style={[styles.button, styles.secondaryButton]}
-            onPress={() => handleFetchRecommendations('ai')}
+            onPress={() => handleFetchRecommendations("ai")}
             disabled={loading}
           >
             <Text style={styles.buttonText}>Get AI Recommendations</Text>

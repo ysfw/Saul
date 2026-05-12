@@ -1133,7 +1133,7 @@ recommend(Course, Difficulty) :-
     major_matches(Major),
     student_preference(Topic),
     prefers_difficulty(Difficulty),
-    not(effectively_completed(Course)),
+    \+ (effectively_completed(Course)),
     once(prerequisite(Course, _)),
     \+ (prerequisite(Course, Pre), \+ effectively_completed(Pre)).
 
@@ -1143,8 +1143,8 @@ recommend(Course, Difficulty) :-
     major_matches(Major),
     student_preference(Topic),
     prefers_difficulty(Difficulty),
-    not(effectively_completed(Course)),
-    not(prerequisite(Course, _)).
+    \+ (effectively_completed(Course)),
+    \+ (prerequisite(Course, _)).
 
 
 % Fallback Level 2: Drop topic, keep difficulty
@@ -1154,7 +1154,7 @@ recommend_any_topic(Course, Difficulty) :-
     course(Course, Difficulty, _, Major),
     major_matches(Major),
     prefers_difficulty(Difficulty),
-    not(effectively_completed(Course)),
+    \+ (effectively_completed(Course)),
     once(prerequisite(Course, _)),
     \+ (prerequisite(Course, Pre), \+ effectively_completed(Pre)).
 
@@ -1163,8 +1163,8 @@ recommend_any_topic(Course, Difficulty) :-
     course(Course, Difficulty, _, Major),
     major_matches(Major),
     prefers_difficulty(Difficulty),
-    not(effectively_completed(Course)),
-    not(prerequisite(Course, _)).
+    \+ (effectively_completed(Course)),
+    \+ (prerequisite(Course, _)).
 
 
 % Fallback Level 3: Drop difficulty, keep topic
@@ -1174,7 +1174,7 @@ recommend_any_difficulty(Course, Difficulty) :-
     course(Course, Difficulty, Topic, Major),
     major_matches(Major),
     student_preference(Topic),
-    not(effectively_completed(Course)),
+    \+ (effectively_completed(Course)),
     once(prerequisite(Course, _)),
     \+ (prerequisite(Course, Pre), \+ effectively_completed(Pre)).
 
@@ -1183,8 +1183,8 @@ recommend_any_difficulty(Course, Difficulty) :-
     course(Course, Difficulty, Topic, Major),
     major_matches(Major),
     student_preference(Topic),
-    not(effectively_completed(Course)),
-    not(prerequisite(Course, _)).
+    \+ (effectively_completed(Course)),
+    \+ (prerequisite(Course, _)).
 
 
 % Fallback Level 4: Drop both topic and difficulty
@@ -1193,7 +1193,7 @@ recommend_any_difficulty(Course, Difficulty) :-
 recommend_any_difficulty_topic(Course, Difficulty) :-
     course(Course, Difficulty, _, Major),
     major_matches(Major),
-    not(effectively_completed(Course)),
+    \+ (effectively_completed(Course)),
     once(prerequisite(Course, _)),
     \+ (prerequisite(Course, Pre), \+ effectively_completed(Pre)).
 
@@ -1201,7 +1201,7 @@ recommend_any_difficulty_topic(Course, Difficulty) :-
 recommend_any_difficulty_topic(Course, Difficulty) :-
     course(Course, Difficulty, _, Major),
     major_matches(Major),
-    not(effectively_completed(Course)),
-    not(prerequisite(Course, _)).
+    \+ (effectively_completed(Course)),
+    \+ (prerequisite(Course, _)).
 
 
