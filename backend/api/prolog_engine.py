@@ -24,79 +24,54 @@ def get_recommendations(liked_topics: list, completed_courses: list, preferred_d
 
     # Assert the user's context dynamically into Prolog
     # we wrap the string values in quotes to ensure Prolog treats them as atoms, not variables
+    # all values are lowercased to match the lowercase atoms in rules.pl
     for course in completed_courses:
-        prolog.assertz(f"completed('{course}')")
+        prolog.assertz(f"completed('{course.lower()}')")
         
     for topic in liked_topics:
-        prolog.assertz(f"student_preference('{topic}')")
+        prolog.assertz(f"student_preference('{topic.lower()}')")
 
     if preferred_difficulty:
-        prolog.assertz(f"prefers_difficulty('{preferred_difficulty}')")
+        prolog.assertz(f"prefers_difficulty('{preferred_difficulty.lower()}')")
 
     if major:
-        prolog.assertz(f"student_major('{major}')")
+        prolog.assertz(f"student_major('{major.lower()}')")
 
-    recommendations = []
-    seen = set()
-    try:
-        query = prolog.query(f"recommend(Course, Difficulty)")
-        for soln in query:
+    def collect_results(query_str):
+        """Run a Prolog query and collect unique course recommendations."""
+        results = []
+        for soln in prolog.query(query_str):
             course_name = soln["Course"]
             difficulty = soln["Difficulty"]
-            
-            # PySwip sometimes returns byte strings; decoding if needed
             if isinstance(course_name, bytes):
                 course_name = course_name.decode("utf-8")
             if isinstance(difficulty, bytes):
                 difficulty = difficulty.decode("utf-8")
-
             if course_name not in seen:
                 seen.add(course_name)
-                recommendations.append({
-                    "course_name": course_name,
-                    "difficulty": difficulty
-                })
+                results.append({"course_name": course_name, "difficulty": difficulty})
+        return results
 
-        # if strict filtering matches nothing, drop difficulty filter 
+    recommendations = []
+    seen = set()
+    try:
+        # Level 1: Strict — topic + difficulty + major
+        recommendations = collect_results("recommend(Course, Difficulty)")
+
+        # Level 2: Drop topic, keep difficulty
         if not recommendations:
-            query = prolog.query(f"recommend_any_difficulty(Course, Difficulty)")
-            for soln in query:
-                course_name = soln["Course"]
-                difficulty = soln["Difficulty"]
-                
-                # PySwip sometimes returns byte strings; decoding if needed
-                if isinstance(course_name, bytes):
-                    course_name = course_name.decode("utf-8")
-                if isinstance(difficulty, bytes):
-                    difficulty = difficulty.decode("utf-8")
+            recommendations = collect_results("recommend_any_topic(Course, Difficulty)")
 
-                if course_name not in seen:
-                    seen.add(course_name)
-                    recommendations.append({
-                        "course_name": course_name,
-                        "difficulty": difficulty
-                    })
-
-        # if dropping difficulty matches nothing, drop topic filter too 
+        # Level 3: Drop difficulty, keep topic
         if not recommendations:
-            query = prolog.query(f"recommend_any_difficulty_topic(Course, Difficulty)")
-            for soln in query:
-                course_name = soln["Course"]
-                difficulty = soln["Difficulty"]
-                
-                # PySwip sometimes returns byte strings; decoding if needed
-                if isinstance(course_name, bytes):
-                    course_name = course_name.decode("utf-8")
-                if isinstance(difficulty, bytes):
-                    difficulty = difficulty.decode("utf-8")
+            recommendations = collect_results("recommend_any_difficulty(Course, Difficulty)")
 
-                if course_name not in seen:
-                    seen.add(course_name)
-                    recommendations.append({
-                        "course_name": course_name,
-                        "difficulty": difficulty
-                    })
+        # Level 4: Drop both topic and difficulty
+        if not recommendations:
+            recommendations = collect_results("recommend_any_difficulty_topic(Course, Difficulty)")
         
+        for course in recommendations:
+            print(f"Recommended Course: {course['course_name']} (Difficulty: {course['difficulty']})")
 
     except Exception as e:
         print(f"Prolog Query Error: {e}")

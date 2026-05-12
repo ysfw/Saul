@@ -1,50 +1,94 @@
-# Welcome to your Expo app 👋
+# Smart Study Advisor
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A course recommendation system built with multiple programming paradigms. Offers two recommendation pipelines: a **non-AI** path powered by a Prolog inference engine, and an **AI** path using Google Gemini.
 
-## Get started
+### Paradigm Usage
 
-1. Install dependencies
+| Paradigm | Where | Why |
+|---|---|---|
+| **Logic (Prolog)** | `api/prolog/rules.pl` | defines course facts, prerequisite chains, and recommendation rules. |
+| **OOP** | `api/models.py` | Django models (`Major`, `Course`) encapsulate data with relationships. |
+| **Functional** | `api/ai_is_calling.py` | Data transformation pipeline using `map`/`lambda` for normalizing topics, pure functions (`build_prompt`, `parse`) that take input and return output with no side effects.  |
+| **Imperative** | `api/prolog_engine.py`, `api/views.py` | Sequential execution flow assert facts, run queries in order, collect results, clean up. |
 
-   ```bash
-   npm install
-   ```
+## Prolog Knowledge Base
 
-2. Start the app
+`api/prolog/rules.pl` contains:
+- **Course facts**: `course(Name, Difficulty, Topic, Major)` ~300 courses across 20+ majors
+- **Prerequisite facts**: `prerequisite(Course, PrerequisiteCourse)`
+- **Dynamic predicates**: `completed/1`, `student_preference/1`, `prefers_difficulty/1`, `student_major/1` asserted per-request by the Python engine
+- **Helper rules**:
+  - `major_matches/1` if no major is asserted, matches any major
+  - `effectively_completed/1` if you completed `math2`, `math1` is inferred as completed since it's a prerequisite
 
-   ```bash
-   npx expo start
-   ```
+### Recommendation Fallback Chain
 
-In the output, you'll find options to open the app in a
+The engine tries progressively relaxed queries:
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+1. **Strict**: matches topic + difficulty + major
+2. **Drop topic**: keeps difficulty + major
+3. **Drop difficulty**: keeps topic + major
+4. **Drop both**: major only
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+Each level has two clauses: one for courses with prerequisites (checks all are met), one for courses with no prerequisites.
 
-## Get a fresh project
+## API Endpoints
 
-When you're ready, run:
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/majors/` | List all majors |
+| `GET` | `/api/courses/?major=<name>` | List course names for a major |
+| `POST` | `/api/recommend/prolog/` | Prolog recommendation|
+| `POST` | `/api/recommend/ai/` | AI recommendation (Gemini) |
+
+### POST `/api/recommend/prolog/`
+
+```json
+{
+    "liked_topics": ["mathematics", "algorithms"],
+    "completed_courses": ["math1", "math2"],
+    "preferred_difficulty": "hard",
+    "major": "computer_and_systems"
+}
+```
+### POST `/api/recommend/ai/`
+
+Same request body. Uses Gemini to generate recommendations based on a structured prompt that includes the prerequisite graph from the Django database.
+
+## Setup
+
+### Backend
 
 ```bash
-npm run reset-project
+cd backend
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Requires SWI-Prolog installed on the system (`sudo apt install swi-prolog`).
 
-## Learn more
+Create `backend/.env`:
+```
+GEMINI_API_KEY=your_key_here
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+```bash
+python manage.py migrate
+python manage.py runserver
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### Mobile App
 
-## Join the community
+```bash
+npm install
+npx expo start
+```
 
-Join our community of developers creating universal apps.
+## Tech Stack
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- **Backend**: Django + Django REST Framework
+- **Prolog Engine**: SWI-Prolog via PySwip
+- **AI**: Google Gemini API (`gemini-2.5-flash`)
+- **Mobile**: Expo / React Native (TypeScript)
+- **Database**: SQLite

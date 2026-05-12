@@ -6,6 +6,16 @@
 :- dynamic prefers_difficulty/1.
 :- dynamic student_major/1.
 
+% if student_major was asserted, filter by it; otherwise accept any major
+major_matches(Major) :- student_major(Major), !.
+major_matches(_) :- \+ student_major(_).
+
+% if you completed a course, you must have completed its prerequisites too
+effectively_completed(Course) :- completed(Course).
+effectively_completed(Course) :-
+    prerequisite(Later, Course),
+    effectively_completed(Later).
+
 :- discontiguous course/4.
 :- discontiguous prerequisite/2.
 
@@ -1115,68 +1125,83 @@ prerequisite(sports_research, sports_training_theory).
 
 
 
-% Strict Search
+% Fallback Level 1: Strict (topic + difficulty + major)
 
 % Recommend a course where ALL prerequisites are completed
 recommend(Course, Difficulty) :-
     course(Course, Difficulty, Topic, Major),
-    student_major(Major),
+    major_matches(Major),
     student_preference(Topic),
     prefers_difficulty(Difficulty),
-    not(completed(Course)),
-    prerequisite(Course, _),
-    \+ (prerequisite(Course, Pre), \+ completed(Pre)).
-
+    not(effectively_completed(Course)),
+    once(prerequisite(Course, _)),
+    \+ (prerequisite(Course, Pre), \+ effectively_completed(Pre)).
 
 % For courses with NO prerequisites
 recommend(Course, Difficulty) :-
     course(Course, Difficulty, Topic, Major),
-    student_major(Major),
+    major_matches(Major),
     student_preference(Topic),
     prefers_difficulty(Difficulty),
-    not(completed(Course)),
+    not(effectively_completed(Course)),
     not(prerequisite(Course, _)).
 
 
+% Fallback Level 2: Drop topic, keep difficulty
 
-% Dropping Difficulty filter
+% Recommend a course where ALL prerequisites are completed
+recommend_any_topic(Course, Difficulty) :-
+    course(Course, Difficulty, _, Major),
+    major_matches(Major),
+    prefers_difficulty(Difficulty),
+    not(effectively_completed(Course)),
+    once(prerequisite(Course, _)),
+    \+ (prerequisite(Course, Pre), \+ effectively_completed(Pre)).
+
+% For courses with NO prerequisites
+recommend_any_topic(Course, Difficulty) :-
+    course(Course, Difficulty, _, Major),
+    major_matches(Major),
+    prefers_difficulty(Difficulty),
+    not(effectively_completed(Course)),
+    not(prerequisite(Course, _)).
+
+
+% Fallback Level 3: Drop difficulty, keep topic
 
 % Recommend a course where ALL prerequisites are completed
 recommend_any_difficulty(Course, Difficulty) :-
     course(Course, Difficulty, Topic, Major),
-    student_major(Major),
+    major_matches(Major),
     student_preference(Topic),
-    not(completed(Course)),
-    prerequisite(Course, _),
-    \+ (prerequisite(Course, Pre), \+ completed(Pre)).
-
+    not(effectively_completed(Course)),
+    once(prerequisite(Course, _)),
+    \+ (prerequisite(Course, Pre), \+ effectively_completed(Pre)).
 
 % For courses with NO prerequisites
 recommend_any_difficulty(Course, Difficulty) :-
     course(Course, Difficulty, Topic, Major),
-    student_major(Major),
+    major_matches(Major),
     student_preference(Topic),
-    not(completed(Course)),
+    not(effectively_completed(Course)),
     not(prerequisite(Course, _)).
 
 
-
-% Dropping Topic filter too
+% Fallback Level 4: Drop both topic and difficulty
 
 % Recommend a course where ALL prerequisites are completed
 recommend_any_difficulty_topic(Course, Difficulty) :-
     course(Course, Difficulty, _, Major),
-    student_major(Major),
-    not(completed(Course)),
-    prerequisite(Course, _),
-    \+ (prerequisite(Course, Pre), \+ completed(Pre)).
-
+    major_matches(Major),
+    not(effectively_completed(Course)),
+    once(prerequisite(Course, _)),
+    \+ (prerequisite(Course, Pre), \+ effectively_completed(Pre)).
 
 % For courses with NO prerequisites
 recommend_any_difficulty_topic(Course, Difficulty) :-
     course(Course, Difficulty, _, Major),
-    student_major(Major),
-    not(completed(Course)),
+    major_matches(Major),
+    not(effectively_completed(Course)),
     not(prerequisite(Course, _)).
 
 
