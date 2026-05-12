@@ -1,150 +1,108 @@
-import { Platform, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
+import { Colors } from "./theme";
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#121212",
+    backgroundColor: Colors.background,
   },
-  scrollContent: {
+  headerContainer: {
     padding: 24,
-    paddingTop: 60,
-    paddingBottom: 40,
+    paddingTop: 80,
+    backgroundColor: Colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.borderLight,
+    alignItems: "center",
+  },
+  headerBriefcaseIcon: {
+    marginBottom: 12,
   },
   header: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#FFFFFF",
+    fontSize: 24,
+    fontWeight: "900",
+    color: Colors.primary,
     marginBottom: 8,
+    textAlign: "center",
+    letterSpacing: 0.5,
   },
   subHeader: {
-    fontSize: 16,
-    color: "#A0A0A0",
-    marginBottom: 32,
+    fontSize: 18,
+    color: Colors.textSecondary,
+    textAlign: "center",
   },
-  formGroup: {
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 14,
-    color: "#E0E0E0",
-    marginBottom: 8,
-    fontWeight: "500",
-  },
-  input: {
-    backgroundColor: "#1E1E1E",
-    borderWidth: 1,
-    borderColor: "#333333",
-    borderRadius: 8,
-    padding: 14,
-    color: "#FFFFFF",
-    fontSize: 16,
-  },
-  pickerContainer: {
-    padding: Platform.OS === "web" ? 0 : Platform.OS === "ios" ? 0 : -8,
-  },
-  picker: {
-    color: "#FFFFFF",
-    backgroundColor: Platform.OS === "web" ? "#1E1E1E" : "transparent",
-    borderWidth: 0,
-    ...(Platform.OS === "web" && ({ padding: 14, outlineWidth: 0 } as any)),
-  },
-  pickerItem: {
-    backgroundColor: "#1E1E1E",
-    color: "#FFFFFF",
-  },
-  buttonContainer: {
-    marginTop: 10,
-    gap: 12,
-  },
-  button: {
-    borderRadius: 8,
+  listContent: {
     padding: 16,
+  },
+  majorCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: Colors.surface,
+    padding: 20,
+    borderRadius: 12,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: Colors.borderLight,
+  },
+  majorInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+  },
+  iconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: Colors.primaryAlpha10,
     alignItems: "center",
     justifyContent: "center",
+    marginRight: 16,
   },
-  primaryButton: {
-    backgroundColor: "#2D3748",
-    borderWidth: 1,
-    borderColor: "#4A5568",
-  },
-  secondaryButton: {
-    backgroundColor: "#1A202C",
-    borderWidth: 1,
-    borderColor: "#2D3748",
-  },
-  buttonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
+  majorText: {
+    fontSize: 18,
+    color: Colors.textMuted,
     fontWeight: "600",
+    flex: 1,
+    flexWrap: "wrap",
+    paddingRight: 10,
   },
-  loadingContainer: {
-    marginTop: 30,
+  centerContainer: {
+    flex: 1,
+    justifyContent: "center",
     alignItems: "center",
+    padding: 24,
   },
   loadingText: {
-    color: "#A0A0A0",
-    marginTop: 12,
+    color: Colors.textSecondary,
+    marginTop: 16,
+    fontSize: 18,
   },
   errorContainer: {
-    marginTop: 20,
+    alignItems: "center",
+    marginBottom: 20,
     padding: 16,
-    backgroundColor: "#3b1c1c",
-    borderRadius: 8,
+    backgroundColor: "rgba(255, 107, 107, 0.1)",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#ff6b6b",
   },
   errorText: {
     color: "#ff6b6b",
-    fontWeight: "500",
+    fontSize: 16,
+    marginTop: 8,
+    textAlign: "center",
   },
-  resultsContainer: {
-    marginTop: 32,
-  },
-  resultsTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#FFFFFF",
-    marginBottom: 16,
-  },
-  recommendationCard: {
-    backgroundColor: "#1E1E1E",
-    padding: 16,
+  retryButton: {
+    backgroundColor: "transparent",
+    paddingVertical: 12,
+    paddingHorizontal: 24,
     borderRadius: 8,
-    marginBottom: 12,
-    borderLeftWidth: 4,
-    borderLeftColor: "#4DA8DA",
-  },
-  recommendationText: {
-    color: "#E0E0E0",
-    fontSize: 16,
-    lineHeight: 24,
-  },
-  resultText: {
-    color: "#A0A0A0",
-    fontSize: 16,
-  },
-  optionsContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-  },
-  optionItem: {
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 16,
-    backgroundColor: "#1E1E1E",
     borderWidth: 1,
-    borderColor: "#2A2A2A",
-    marginRight: 8,
-    marginBottom: 8,
+    borderColor: Colors.primary,
   },
-  optionSelected: {
-    backgroundColor: "#274C5E",
-    borderColor: "#4DA8DA",
-  },
-  optionText: {
-    color: "#E0E0E0",
-    fontSize: 14,
-  },
-  helpText: {
-    color: "#909090",
-    fontSize: 14,
+  retryText: {
+    color: Colors.primary,
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });

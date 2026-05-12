@@ -1,0 +1,302 @@
+import { StyleSheet } from "react-native";
+import { Colors } from "./theme";
+
+export const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: Colors.background,
+  },
+  scrollContent: {
+    padding: 24,
+    paddingTop: 60,
+    paddingBottom: 40,
+  },
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  backButton: {
+    marginRight: 12,
+    padding: 4,
+  },
+  header: {
+    flex: 1,
+    fontSize: 32,
+    fontWeight: "900",
+    color: Colors.primary,
+    letterSpacing: 0.5,
+  },
+  subHeader: {
+    fontSize: 18,
+    color: Colors.textSecondary,
+    marginBottom: 40,
+  },
+  formGroup: {
+    marginBottom: 36,
+  },
+  labelContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  labelIcon: {
+    marginRight: 10,
+  },
+  label: {
+    fontSize: 18,
+    color: Colors.textPrimary,
+    fontWeight: "600",
+  },
+  majorTitle: {
+    fontSize: 26,
+    fontWeight: "bold",
+    color: Colors.primary,
+    textTransform: "capitalize",
+    marginTop: 2,
+    marginBottom: 36,
+  },
+  optionsContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 12,
+  },
+  optionItem: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    backgroundColor: Colors.surfaceLight,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  optionSelected: {
+    backgroundColor: Colors.primary,
+    borderColor: Colors.primary,
+  },
+  optionText: {
+    color: Colors.textSecondary,
+    fontSize: 16,
+    fontWeight: "500",
+  },
+  optionTextSelected: {
+    color: Colors.background,
+    fontWeight: "700",
+  },
+  helpText: {
+    color: "#909090",
+    fontSize: 16,
+  },
+  difficultyContainer: {
+    flexDirection: "row",
+    gap: 12,
+  },
+  difficultyButton: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 8,
+    backgroundColor: Colors.surfaceLight,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  difficultyDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    marginRight: 8,
+  },
+  difficultyButtonActive: {
+    backgroundColor: Colors.primaryAlpha10,
+    borderColor: Colors.primary,
+  },
+  difficultyButtonText: {
+    color: Colors.textSecondary,
+    fontSize: 17,
+    fontWeight: "600",
+  },
+  difficultyButtonTextActive: {
+    color: Colors.primary,
+    fontWeight: "700",
+  },
+  buttonContainer: {
+    marginTop: 20,
+    gap: 16,
+  },
+  button: {
+    borderRadius: 12,
+    padding: 18,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  primaryButton: {
+    backgroundColor: Colors.primary,
+  },
+  secondaryButton: {
+    backgroundColor: "transparent",
+    borderWidth: 1.5,
+    borderColor: Colors.primary,
+  },
+  primaryButtonText: {
+    color: Colors.background,
+    fontSize: 18,
+    fontWeight: "bold",
+    marginLeft: 8,
+  },
+  secondaryButtonText: {
+    color: Colors.primary,
+    fontSize: 18,
+    fontWeight: "bold",
+    marginLeft: 8,
+  },
+  loadingContainer: {
+    marginTop: 40,
+    alignItems: "center",
+  },
+  loadingText: {
+    color: Colors.textSecondary,
+    marginTop: 16,
+    fontSize: 18,
+  },
+  errorContainer: {
+    marginTop: 24,
+    padding: 18,
+    backgroundColor: "rgba(255, 107, 107, 0.1)",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#ff6b6b",
+  },
+  errorText: {
+    color: "#ff6b6b",
+    fontSize: 16,
+    fontWeight: "500",
+  },
+  resultsContainer: {
+    marginTop: 40,
+  },
+  resultsTitleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  resultsTitleIcon: {
+    marginRight: 10,
+  },
+  resultsTitleNoMargin: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: Colors.textPrimary,
+    marginBottom: 0,
+  },
+  resultsTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: Colors.textPrimary,
+    marginBottom: 20,
+  },
+  recommendationCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: Colors.surface,
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 16,
+    borderLeftWidth: 4,
+    borderLeftColor: Colors.primary,
+    borderWidth: 1,
+    borderColor: Colors.primaryAlpha30,
+    shadowColor: Colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  aiRecommendationCard: {
+    backgroundColor: Colors.surface,
+    padding: 20,
+    borderRadius: 12,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: Colors.primaryAlpha30,
+    shadowColor: Colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  cardContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+  },
+  cardIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: Colors.primaryAlpha10,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 16,
+  },
+  cardTextContainer: {
+    flex: 1,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: Colors.textPrimary,
+    marginBottom: 4,
+  },
+  cardDifficultyRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  cardDifficultyDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginRight: 6,
+  },
+  cardDifficulty: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+    fontWeight: "600",
+  },
+  difficultySpeedometerIcon: {
+    marginRight: 6,
+  },
+  cardChevron: {
+    marginLeft: 10,
+    opacity: 0.8,
+  },
+  aiInsightHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  aiInsightIcon: {
+    marginRight: 10,
+  },
+  aiInsightTitle: {
+    color: Colors.primary,
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  recommendationText: {
+    color: Colors.textMuted,
+    fontSize: 18,
+    lineHeight: 26,
+  },
+  resultText: {
+    color: Colors.textSecondary,
+    fontSize: 18,
+  },
+  filterMessageText: {
+    color: Colors.textSecondary,
+    fontSize: 18,
+    marginBottom: 16,
+  },
+});
