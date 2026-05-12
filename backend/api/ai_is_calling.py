@@ -41,7 +41,7 @@ def extract_major_prerequisites(major_name):
         courses=Course.objects.filter(majors=major).prefetch_related('prerequisites')
         prereq_map={}
         for course in courses:
-            element=course.prerequisites.values_list('name',flat=True)
+            element=list(course.prerequisites.values_list('name',flat=True))
             if element:
                 prereq_map[course.name]=list(element)
 
@@ -60,8 +60,8 @@ def build_prompt(major,liked_courses,completed_courses,
             Based on the student's information, recommend suitable new courses.
 
             Student major: {major}
-            Liked courses: {', '.join(liked_courses)}
-            Completed courses: {', '.join(completed_courses)}
+            Liked courses: {', '.join(liked_courses or [])}
+            Completed courses: {', '.join(completed_courses or [])}
             Preferred difficulty: {preferred_difficulty}
 
             University prerequisite rules (course: [required prerequisites]):
