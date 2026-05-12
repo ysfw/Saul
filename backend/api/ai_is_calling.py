@@ -9,7 +9,7 @@ def get_ai_recommended_courses(request):
     preferred_difficulty = request.data.get('preferred_difficulty', "")
     major = request.data.get('major', "")
     completed_courses = request.data.get('completed_courses', [])
-    liked_courses = extract_liked_courses(liked_topics)
+    liked_courses = extract_liked_courses(liked_topics, major)
     prerequisites=extract_major_prerequisites(major) #we have map here
 
     client = genai.Client(api_key=settings.GEMINI_API_KEY)
@@ -26,13 +26,17 @@ def get_ai_recommended_courses(request):
 
 
 
-def extract_liked_courses(topics):
-    if not topics:
+def extract_liked_courses(topics, major_name):
+    if not topics or not major_name:
         return []
-    #this shit topic__in==where topic in topics [in SQL]
-    topics=list(map(lambda t:t.lower(), topics))    #map here takes(function,collection) so i apply fun to each elemnt in collection
-    liked_courses=Course.objects.filter(topic__in=topics).values_list('name', flat=True)
-    return list(liked_courses)
+    try:
+        major = Major.objects.get(name__iexact=major_name)
+        #this shit topic__in==where topic in topics [in SQL]
+        topics=list(map(lambda t:t.lower(), topics))    #map here takes(function,collection) so i apply fun to each elemnt in collection
+        liked_courses=Course.objects.filter(topic__in=topics, majors=major).values_list('name', flat=True)
+        return list(liked_courses)
+    except Major.DoesNotExist:
+        return []
 
 
 def extract_major_prerequisites(major_name):
@@ -42,8 +46,7 @@ def extract_major_prerequisites(major_name):
         prereq_map={}
         for course in courses:
             element=list(course.prerequisites.values_list('name',flat=True))
-            if element:
-                prereq_map[course.name]=list(element)
+            prereq_map[course.name]=list(element)
 
 
         return prereq_map
