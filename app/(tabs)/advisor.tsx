@@ -13,7 +13,7 @@ import {
 import { themeColor } from "./theme";
 import { styles } from "./advisor.styles";
 
-const API_BASE_URL = "https://pacifism-gallstone-recliner.ngrok-free.dev";
+const API_BASE_URL = Platform.OS === 'android' ? 'http://10.0.2.2:8000' : 'http://127.0.0.1:8000';
 
 export default function AdvisorScreen() {
   const params = useLocalSearchParams<{ major: string }>();
@@ -69,12 +69,8 @@ export default function AdvisorScreen() {
     const loadOptions = async () => {
       try {
         const [coursesResp, topicsResp] = await Promise.all([
-          fetch(`${API_BASE_URL}/api/courses/?major=${major}`, {
-            headers: { "ngrok-skip-browser-warning": "true" }
-          }),
-          fetch(`${API_BASE_URL}/api/topics/?major=${major}`, {
-            headers: { "ngrok-skip-browser-warning": "true" }
-          })
+          fetch(`${API_BASE_URL}/api/courses/?major=${major}`),
+          fetch(`${API_BASE_URL}/api/topics/?major=${major}`)
         ]);
 
         if (coursesResp.ok) {
@@ -155,8 +151,7 @@ export default function AdvisorScreen() {
       const response = await fetch(url, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "true"
+          "Content-Type": "application/json"
         },
         body: JSON.stringify(payload),
       });

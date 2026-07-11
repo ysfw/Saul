@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
+  Platform,
   Text,
   TouchableOpacity,
   View,
@@ -11,7 +12,7 @@ import {
 import { styles } from "./index.styles";
 import { themeColor } from "./theme";
 
-const API_BASE_URL = "https://pacifism-gallstone-recliner.ngrok-free.dev";
+const API_BASE_URL = Platform.OS === 'android' ? 'http://10.0.2.2:8000' : 'http://127.0.0.1:8000';
 
 export default function MajorsScreen() {
   const [majors, setMajors] = useState<string[]>([]);
@@ -27,11 +28,7 @@ export default function MajorsScreen() {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch(`${API_BASE_URL}/api/majors/`, {
-        headers: {
-          "ngrok-skip-browser-warning": "true"
-        }
-      });
+      const response = await fetch(`${API_BASE_URL}/api/majors/`);
       if (!response.ok) throw new Error("Failed to fetch majors");
       const data = await response.json();
       const majorNames = data.map((m: any) => m.name);
